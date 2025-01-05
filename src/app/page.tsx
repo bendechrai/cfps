@@ -94,7 +94,11 @@ export default function Home() {
     }
   }, [searchTerm, selectedContinents]);
 
-  const continents: Continent[] = ['Europe', 'North America', 'South America', 'Asia', 'Africa', 'Oceania', 'Online', 'Unknown'];
+  const baseContients: Continent[] = ['Europe', 'North America', 'South America', 'Asia', 'Africa', 'Oceania', 'Online'];
+  const continents: Continent[] = cfps.some(cfp => getContinent(cfp.conf.location) === 'Unknown')
+    ? [...baseContients, 'Unknown']
+    : baseContients;
+
   const statusOptions: StatusFilterType[] = [null, 'submitted', 'ignored', 'all'];
 
   const handleStatusChange = (newStatus: StatusFilterType) => {
