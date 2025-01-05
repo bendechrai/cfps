@@ -26,7 +26,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [cfpStatuses, setCfpStatuses] = useState<Record<string, { status: CFPStatus; notes: string }>>({});
-  const [showStatusFilter, setShowStatusFilter] = useState<StatusFilterType>('all');
+  const [showStatusFilter, setShowStatusFilter] = useState<StatusFilterType>(null);
 
   useEffect(() => {
     const fetchCFPs = async () => {
