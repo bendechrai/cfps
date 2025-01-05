@@ -27,16 +27,29 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [cfpStatuses, setCfpStatuses] = useState<Record<string, { status: CFPStatus; notes: string }>>({});
   const [showStatusFilter, setShowStatusFilter] = useState<StatusFilterType>('all');
-  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+    const fetchCFPs = async () => {
+      try {
+        const response = await fetch('https://developers.events/all-cfps.json');
+        if (!response.ok) throw new Error('Failed to fetch CFPs');
+        const data = await response.json();
+        
+        // Only check untilDate, ignore status field
+        const activeCfps = data
+          .filter((cfp: CFP) => cfp.untilDate > CURRENT_TIME)
+          .sort((a: CFP, b: CFP) => a.untilDate - b.untilDate);
+        
+        setCfps(activeCfps);
+      } catch (error) {
+        setError('Failed to load CFPs. Please try again later.');
+        console.error('Error fetching CFPs:', error);
+      } finally {
+        setLoading(false);
+      }
     };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+
+    fetchCFPs();
   }, []);
 
   useEffect(() => {
@@ -81,60 +94,26 @@ export default function Home() {
     }
   }, [searchTerm, selectedContinents]);
 
-  useEffect(() => {
-    const fetchCFPs = async () => {
-      try {
-        const response = await fetch('https://developers.events/all-cfps.json');
-        if (!response.ok) throw new Error('Failed to fetch CFPs');
-        const data = await response.json();
-        
-        // Only check untilDate, ignore status field
-        const activeCfps = data
-          .filter((cfp: CFP) => cfp.untilDate > CURRENT_TIME)
-          .sort((a: CFP, b: CFP) => a.untilDate - b.untilDate);
-        
-        setCfps(activeCfps);
-      } catch (err) {
-        setError('Failed to load CFPs. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCFPs();
-  }, []);
-
   const continents: Continent[] = ['Europe', 'North America', 'South America', 'Asia', 'Africa', 'Oceania', 'Online', 'Unknown'];
   const statusOptions: StatusFilterType[] = [null, 'submitted', 'ignored', 'all'];
 
-  const toggleContinent = (continent: Continent) => {
-    setSelectedContinents(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(continent)) {
-        newSet.delete(continent);
-      } else {
-        newSet.add(continent);
+  const handleStatusChange = (newStatus: StatusFilterType) => {
+    setShowStatusFilter(newStatus);
+  };
+
+  const handleCFPStatusChange = (cfpId: string, newStatus: CFPStatus | null) => {
+    if (!newStatus) return;
+    
+    const newStatuses = {
+      ...cfpStatuses,
+      [cfpId]: {
+        status: newStatus,
+        notes: cfpStatuses[cfpId]?.notes || ''
       }
-      return newSet;
-    });
-  };
-
-  const handleContinentSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = event.target.value;
-    if (!value || value === '') {
-      setSelectedContinents(new Set());
-    } else {
-      setSelectedContinents(new Set([value as Continent]));
-    }
-  };
-
-  const updateCFPStatus = (cfp: CFP, status: CFPStatus, notes: string = '') => {
-    const cfpId = createCFPId(cfp);
-    saveCFPStatus(cfpId, status, notes);
-    setCfpStatuses(prev => ({
-      ...prev,
-      [cfpId]: { status, notes }
-    }));
+    };
+    
+    setCfpStatuses(newStatuses);
+    saveCFPStatus(cfpId, newStatus);
   };
 
   const filteredCFPs = cfps.filter(cfp => {
@@ -188,14 +167,6 @@ export default function Home() {
     });
   }, [filteredCFPs]);
 
-  const debounce = (fn: Function, ms = 300) => {
-    let timeoutId: ReturnType<typeof setTimeout>;
-    return function (this: any, ...args: any[]) {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => fn.apply(this, args), ms);
-    };
-  };
-
   if (loading) return <div className={styles.container}>Loading CFPs...</div>;
   if (error) return <div className={styles.container}>{error}</div>;
 
@@ -204,7 +175,6 @@ export default function Home() {
       <div className={styles.titleBlock}>
         <div className={styles.titleContent}>
           <h1>CFP Tracker</h1>
-          <p className={styles.subtitle}>Track your conference talk submissions</p>
         </div>
       </div>
       <div className={styles.contentContainer}>
@@ -254,7 +224,7 @@ export default function Home() {
                 <SingleSelect<StatusFilterType>
                   options={statusOptions}
                   value={showStatusFilter}
-                  onChange={setShowStatusFilter}
+                  onChange={handleStatusChange}
                   placeholder="Filter by Status"
                   getLabel={getStatusLabel}
                 />
@@ -289,14 +259,14 @@ export default function Home() {
                       <div className={styles.statusButtons}>
                         <button
                           className={`${styles.statusButton} ${status === 'submitted' ? styles.active : ''}`}
-                          onClick={() => updateCFPStatus(cfp, status === 'submitted' ? null : 'submitted')}
+                          onClick={() => handleCFPStatusChange(cfpId, status === 'submitted' ? null : 'submitted')}
                         >
                           <span style={{ color: status === 'submitted' ? '#22c55e' : 'currentColor' }}>✓</span>
                           Submitted
                         </button>
                         <button
                           className={`${styles.statusButton} ${status === 'ignored' ? styles.active : ''}`}
-                          onClick={() => updateCFPStatus(cfp, status === 'ignored' ? null : 'ignored')}
+                          onClick={() => handleCFPStatusChange(cfpId, status === 'ignored' ? null : 'ignored')}
                         >
                           <span style={{ color: status === 'ignored' ? '#ef4444' : 'currentColor' }}>✕</span>
                           Not Interested

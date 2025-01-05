@@ -50,11 +50,20 @@ export function MultiSelect<T extends string | number>({
     onChange(newSelected);
   };
 
-  const removeOption = (option: T, event: React.MouseEvent) => {
-    event.stopPropagation(); // Prevent opening dropdown
+  const removeOption = (option: T, event?: React.MouseEvent<HTMLSpanElement>) => {
+    if (event) {
+      event.stopPropagation(); // Prevent opening dropdown
+    }
     const newSelected = new Set(selectedOptions);
     newSelected.delete(option);
     onChange(newSelected);
+  };
+
+  const handleKeyDown = (option: T, event: React.KeyboardEvent<HTMLSpanElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      removeOption(option);
+    }
   };
 
   return (
@@ -78,12 +87,7 @@ export function MultiSelect<T extends string | number>({
                   tabIndex={0}
                   className={styles.pillRemove}
                   onClick={(e) => removeOption(option, e)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      removeOption(option, e as any);
-                    }
-                  }}
+                  onKeyDown={(e) => handleKeyDown(option, e)}
                   aria-label={`Remove ${String(option)}`}
                 >
                   ×
