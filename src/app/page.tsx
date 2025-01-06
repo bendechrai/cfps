@@ -27,8 +27,12 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [cfpStatuses, setCfpStatuses] = useState<Record<string, { status: CFPStatus; notes: string }>>({});
   const [showStatusFilter, setShowStatusFilter] = useState<StatusFilterType>(null);
+  const [showMinLoading, setShowMinLoading] = useState(true);
 
   useEffect(() => {
+    const startTime = Date.now();
+    const minLoadingTime = 500; // Minimum load time to show off the tractor!
+
     const fetchCFPs = async () => {
       try {
         const response = await fetch('https://developers.events/all-cfps.json');
@@ -45,7 +49,14 @@ export default function Home() {
         setError('Failed to load CFPs. Please try again later.');
         console.error('Error fetching CFPs:', error);
       } finally {
-        setLoading(false);
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = Math.max(0, minLoadingTime - elapsedTime);
+        
+        // Ensure minimum loading time
+        setTimeout(() => {
+          setLoading(false);
+          setShowMinLoading(false);
+        }, remainingTime);
       }
     };
 
@@ -171,8 +182,6 @@ export default function Home() {
     });
   }, [filteredCFPs]);
 
-  if (loading) return <div className={styles.container}>Loading CFPs...</div>;
-  if (error) return <div className={styles.container}>{error}</div>;
 
   return (
     <div className={styles.container}>
@@ -237,54 +246,73 @@ export default function Home() {
           </div>
         </header>
 
-        <main className={styles.main}>
-          <div className={styles.grid} ref={gridRef}>
-            {filteredCFPs.length > 0 ? (
-              filteredCFPs.map((cfp, index) => {
-                const cfpId = createCFPId(cfp);
-                const status = cfpStatuses[cfpId]?.status;
-                return (
-                  <article key={index} className={`${styles.card} ${status ? styles[status] : ''}`}>
-                    <h2 className={styles.cardTitle}>{cfp.conf.name}</h2>
-                    <div className={styles.cardMeta}>
-                      <p>Location: {cfp.conf.location}</p>
-                      <p>CFP Closes: {formatDate(cfp.untilDate)}</p>
-                      <p>Event Date: {formatDate(cfp.conf.date[0])}</p>
-                    </div>
-                    <div className={styles.cardActions}>
-                      <a
-                        href={cfp.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.cardLink}
-                      >
-                        Submit Proposal
-                      </a>
-                      <div className={styles.statusButtons}>
-                        <button
-                          className={`${styles.statusButton} ${status === 'submitted' ? styles.active : ''}`}
-                          onClick={() => handleCFPStatusChange(cfpId, status === 'submitted' ? null : 'submitted')}
-                        >
-                          <span style={{ color: status === 'submitted' ? '#22c55e' : 'currentColor' }}>✓</span>
-                          Submitted
-                        </button>
-                        <button
-                          className={`${styles.statusButton} ${status === 'ignored' ? styles.active : ''}`}
-                          onClick={() => handleCFPStatusChange(cfpId, status === 'ignored' ? null : 'ignored')}
-                        >
-                          <span style={{ color: status === 'ignored' ? '#ef4444' : 'currentColor' }}>✕</span>
-                          Not Interested
-                        </button>
-                      </div>
-                    </div>
-                  </article>
-                );
-              })
-            ) : (
-              <p className={styles.noResults}>No active CFPs found matching your criteria</p>
-            )}
+        {(loading || showMinLoading) && (
+          <div className={styles.messageContainer}>
+            <div className={styles.loadingMessage}>
+              <span className={styles.loadingEmoji}>🚜</span>
+              Loading CFPs...
+            </div>
           </div>
-        </main>
+        )}
+
+        {error && (
+          <div className={styles.messageContainer}>
+            <div className={styles.errorMessage}>
+              {error}
+            </div>
+          </div>
+        )}
+
+        {!loading && !error && !showMinLoading && (
+          <main className={styles.main}>
+            <div className={styles.grid} ref={gridRef}>
+              {filteredCFPs.length > 0 ? (
+                filteredCFPs.map((cfp, index) => {
+                  const cfpId = createCFPId(cfp);
+                  const status = cfpStatuses[cfpId]?.status;
+                  return (
+                    <article key={index} className={`${styles.card} ${status ? styles[status] : ''}`}>
+                      <h2 className={styles.cardTitle}>{cfp.conf.name}</h2>
+                      <div className={styles.cardMeta}>
+                        <p>Location: {cfp.conf.location}</p>
+                        <p>CFP Closes: {formatDate(cfp.untilDate)}</p>
+                        <p>Event Date: {formatDate(cfp.conf.date[0])}</p>
+                      </div>
+                      <div className={styles.cardActions}>
+                        <a
+                          href={cfp.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.cardLink}
+                        >
+                          Submit Proposal
+                        </a>
+                        <div className={styles.statusButtons}>
+                          <button
+                            className={`${styles.statusButton} ${status === 'submitted' ? styles.active : ''}`}
+                            onClick={() => handleCFPStatusChange(cfpId, status === 'submitted' ? null : 'submitted')}
+                          >
+                            <span style={{ color: status === 'submitted' ? '#22c55e' : 'currentColor' }}>✓</span>
+                            Submitted
+                          </button>
+                          <button
+                            className={`${styles.statusButton} ${status === 'ignored' ? styles.active : ''}`}
+                            onClick={() => handleCFPStatusChange(cfpId, status === 'ignored' ? null : 'ignored')}
+                          >
+                            <span style={{ color: status === 'ignored' ? '#ef4444' : 'currentColor' }}>✕</span>
+                            Not Interested
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })
+              ) : (
+                <p className={styles.noResults}>No active CFPs found matching your criteria</p>
+              )}
+            </div>
+          </main>
+        )}
       </div>
       <footer className={styles.footer}>
         <div className={styles.footerContent}>
