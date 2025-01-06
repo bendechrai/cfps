@@ -8,7 +8,7 @@ import { CFPStatus, createCFPId, getCFPStatuses, saveCFPStatus } from '../utils/
 import { MultiSelect } from '../components/MultiSelect';
 import { SingleSelect } from '../components/SingleSelect';
 
-const CURRENT_TIME = new Date('2025-01-05T23:03:18Z').getTime();
+const CURRENT_TIME = new Date().getTime();
 
 const FILTER_STORAGE_KEY = 'cfp-tracker-filters';
 
