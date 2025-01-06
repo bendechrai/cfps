@@ -187,7 +187,7 @@ export default function Home() {
     <div className={styles.container}>
       <div className={styles.titleBlock}>
         <div className={styles.titleContent}>
-          <h1>Ben's CFP Tracker</h1>
+          <h1>Ben&apos;s CFP Tracker</h1>
         </div>
       </div>
       <div className={styles.contentContainer}>

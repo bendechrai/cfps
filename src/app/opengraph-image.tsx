@@ -34,7 +34,7 @@ export default async function Image() {
             marginBottom: '20px',
           }}
         >
-          Ben's CFP Tracker
+          Ben&apos;s CFP Tracker
         </div>
         <div
           style={{
