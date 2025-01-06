@@ -34,12 +34,12 @@ export default function Home() {
         const response = await fetch('https://developers.events/all-cfps.json');
         if (!response.ok) throw new Error('Failed to fetch CFPs');
         const data = await response.json();
-        
+
         // Only check untilDate, ignore status field
         const activeCfps = data
           .filter((cfp: CFP) => cfp.untilDate > CURRENT_TIME)
           .sort((a: CFP, b: CFP) => a.untilDate - b.untilDate);
-        
+
         setCfps(activeCfps);
       } catch (error) {
         setError('Failed to load CFPs. Please try again later.');
@@ -56,9 +56,9 @@ export default function Home() {
     // Load saved statuses
     const savedStatuses = getCFPStatuses();
     setCfpStatuses(Object.fromEntries(
-      Object.entries(savedStatuses).map(([id, data]) => [id, { 
-        status: data.status, 
-        notes: data.notes || '' 
+      Object.entries(savedStatuses).map(([id, data]) => [id, {
+        status: data.status,
+        notes: data.notes || ''
       }])
     ));
   }, []);
@@ -66,7 +66,7 @@ export default function Home() {
   useEffect(() => {
     // Load saved filters
     if (typeof window === 'undefined') return;
-    
+
     try {
       const savedFilters = localStorage.getItem(FILTER_STORAGE_KEY);
       if (savedFilters) {
@@ -82,7 +82,7 @@ export default function Home() {
   useEffect(() => {
     // Save filters when they change
     if (typeof window === 'undefined') return;
-    
+
     try {
       const filtersToSave: SavedFilters = {
         searchTerm,
@@ -107,7 +107,7 @@ export default function Home() {
 
   const handleCFPStatusChange = (cfpId: string, newStatus: CFPStatus | null) => {
     if (!newStatus) return;
-    
+
     const newStatuses = {
       ...cfpStatuses,
       [cfpId]: {
@@ -115,7 +115,7 @@ export default function Home() {
         notes: cfpStatuses[cfpId]?.notes || ''
       }
     };
-    
+
     setCfpStatuses(newStatuses);
     saveCFPStatus(cfpId, newStatus);
   };
@@ -125,10 +125,10 @@ export default function Home() {
     const matchesContinent = selectedContinents.size === 0 || selectedContinents.has(getContinent(cfp.conf.location));
     const cfpId = createCFPId(cfp);
     const currentStatus = cfpStatuses[cfpId]?.status;
-    const matchesStatus = showStatusFilter === 'all' 
-      ? true 
-      : showStatusFilter === null 
-        ? !currentStatus 
+    const matchesStatus = showStatusFilter === 'all'
+      ? true
+      : showStatusFilter === null
+        ? !currentStatus
         : currentStatus === showStatusFilter;
     return matchesSearch && matchesContinent && matchesStatus;
   });
@@ -160,7 +160,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!gridRef.current) return;
-    
+
     // Add title tooltips for truncated text
     const titles = gridRef.current.querySelectorAll(`.${styles.cardTitle}`);
     titles.forEach((title) => {
@@ -252,10 +252,10 @@ export default function Home() {
                       <p>Event Date: {formatDate(cfp.conf.date[0])}</p>
                     </div>
                     <div className={styles.cardActions}>
-                      <a 
-                        href={cfp.link} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
+                      <a
+                        href={cfp.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className={styles.cardLink}
                       >
                         Submit Proposal
@@ -287,12 +287,20 @@ export default function Home() {
         </main>
       </div>
       <footer className={styles.footer}>
-        Data provided by <a href="https://github.com/scraly/developers-conferences-agenda" target="_blank" rel="noopener noreferrer">
-          <svg className={styles.githubIcon} viewBox="0 0 16 16" aria-hidden="true">
-            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
-          </svg>
-          developers-conferences-agenda.
-        </a> Conference submission statuses are stored in your browser&apos;s local storage for privacy.
+        <div className={styles.footerContent}>
+          Created by <a href="https://bsky.app/profile/bendechr.ai" target="_blank" rel="noopener noreferrer">
+            <svg className={styles.blueskyIcon} viewBox="0 0 600 530" aria-hidden="true">
+              <path d="m135.72 44.03c66.496 49.921 138.02 151.14 164.28 205.46 26.262-54.316 97.782-155.54 164.28-205.46 47.98-36.021 125.72-63.892 125.72 24.795 0 17.712-10.155 148.79-16.111 170.07-20.703 73.984-96.144 92.854-163.25 81.433 117.3 19.964 147.14 86.092 82.697 152.22-122.39 125.59-175.91-31.511-189.63-71.766-2.514-7.3797-3.6904-10.832-3.7077-7.8964-0.0174-2.9357-1.1937 0.51669-3.7077 7.8964-13.714 40.255-67.233 197.36-189.63 71.766-64.444-66.128-34.605-132.26 82.697-152.22-67.108 11.421-142.55-7.4491-163.25-81.433-5.9562-21.282-16.111-152.36-16.111-170.07 0-88.687 77.742-60.816 125.72-24.795z" />
+            </svg>{" "}
+            bendechr.ai
+          </a>. Conference submission statuses are stored in your browser&apos;s local storage for privacy.
+          Data from <a href="https://github.com/developers-conferences-agenda/developers-conferences-agenda" target="_blank" rel="noopener noreferrer">
+            <svg className={styles.githubIcon} viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+            </svg>{" "}
+            developers-conferences-agenda
+          </a>
+        </div>
       </footer>
     </div>
   );
