@@ -8,7 +8,7 @@ import { CFPStatus, createCFPId, getCFPStatuses, saveCFPStatus } from '../utils/
 import { MultiSelect } from '../components/MultiSelect';
 import { SingleSelect } from '../components/SingleSelect';
 
-const CURRENT_TIME = new Date().getTime();
+const CURRENT_TIME = new Date('2025-01-06T00:54:02Z').getTime();
 
 const FILTER_STORAGE_KEY = 'cfp-tracker-filters';
 
@@ -187,7 +187,7 @@ export default function Home() {
     <div className={styles.container}>
       <div className={styles.titleBlock}>
         <div className={styles.titleContent}>
-          <h1>CFP Tracker</h1>
+          <h1>Ben's CFP Tracker</h1>
         </div>
       </div>
       <div className={styles.contentContainer}>
