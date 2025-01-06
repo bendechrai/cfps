@@ -321,6 +321,7 @@
 .footerContent {
   max-width: 1400px;
   margin: 0 auto;
+  text-wrap: balance;
 }
 
 .footer a {
