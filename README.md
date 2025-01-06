@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CFP Tracker
+
+A modern web application to help speakers track and manage conference speaking opportunities. Built with Next.js and TypeScript, this tool helps you (hopefully) never miss a CFP (Call for Papers) deadline again.
+
+## Features
+
+- Filter conferences by continent
+- Search through available CFPs
+- Track submission status (Submitted/Not Interested)
+- Privacy-focused: All submission statuses stored locally in your browser
+- Responsive design for desktop and mobile
+- Real-time data from multiple sources:
+  - [developers.events](https://developers.events)
+  - More to come!
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js 18.0 or later
+- npm, yarn, or pnpm
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   git clone https://github.com/bendechrai/cfps.git
+   cd cfps
+   ```
 
-## Learn More
+2. Install dependencies:
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Start the development server:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```bash
+   npm run dev
+   ```
 
-## Deploy on Vercel
+4. Open [http://localhost:9876](http://localhost:9876) in your browser
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Usage
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Search**: Use the search box to filter conferences by name
+- **Filter by Location**: Select continents to filter conferences by location
+- **Track Submissions**: Mark CFPs as "Submitted" or "Not Interested"
+- **View Deadlines**: See submission deadlines for each conference
+- **Quick Access**: Click conference links to visit their websites or submission forms
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+## License
+
+This project is open source and available under the MIT license.
