@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const geist = Geist({
@@ -49,6 +50,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={geist.className}>{children}</body>
+      <Script src="https://scripts.simpleanalyticscdn.com/latest.js" />
     </html>
   );
 }
