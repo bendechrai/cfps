@@ -12,8 +12,7 @@ import {
 } from "../utils/cfpStatus";
 import { MultiSelect } from "../components/MultiSelect";
 import { SingleSelect } from "../components/SingleSelect";
-
-const CURRENT_TIME = new Date().getTime();
+import { CFPService } from "../services/cfp/cfp.service";
 
 const FILTER_STORAGE_KEY = "cfp-tracker-filters";
 
@@ -45,24 +44,15 @@ export default function Home() {
 
     const fetchCFPs = async () => {
       try {
-        const response = await fetch("https://developers.events/all-cfps.json");
-        if (!response.ok) throw new Error("Failed to fetch CFPs");
-        const data = await response.json();
-
-        // Only check untilDate, ignore status field
-        const activeCfps = data
-          .filter((cfp: CFP) => cfp.untilDate > CURRENT_TIME)
-          .sort((a: CFP, b: CFP) => a.untilDate - b.untilDate);
-
+        const cfpService = CFPService.getInstance();
+        const activeCfps = await cfpService.fetchCFPs();
         setCfps(activeCfps);
       } catch (error) {
         setError("Failed to load CFPs. Please try again later.");
-        console.error("Error fetching CFPs:", error);
       } finally {
         const elapsedTime = Date.now() - startTime;
         const remainingTime = Math.max(0, minLoadingTime - elapsedTime);
 
-        // Ensure minimum loading time
         setTimeout(() => {
           setLoading(false);
           setShowMinLoading(false);
