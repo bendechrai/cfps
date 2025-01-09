@@ -13,7 +13,7 @@ import {
 import { MultiSelect } from "../components/MultiSelect";
 import { SingleSelect } from "../components/SingleSelect";
 
-const CURRENT_TIME = new Date("2025-01-06T00:54:02Z").getTime();
+const CURRENT_TIME = new Date().getTime();
 
 const FILTER_STORAGE_KEY = "cfp-tracker-filters";
 
