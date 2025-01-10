@@ -8,7 +8,6 @@ import {
   CFPStatus,
   createCFPId,
   getCFPStatuses,
-  saveCFPStatus,
 } from "../utils/cfpStatus";
 import { MultiSelect } from "../components/MultiSelect";
 import { SingleSelect } from "../components/SingleSelect";
@@ -162,18 +161,21 @@ export default function Home() {
     cfpId: string,
     newStatus: CFPStatus | null
   ) => {
-    if (!newStatus) return;
-
     const newStatuses = {
       ...cfpStatuses,
-      [cfpId]: {
-        status: newStatus,
-        notes: cfpStatuses[cfpId]?.notes || "",
-      },
     };
 
+    if (newStatus === null) {
+      delete newStatuses[cfpId];
+    } else {
+      newStatuses[cfpId] = {
+        status: newStatus,
+        notes: cfpStatuses[cfpId]?.notes || "",
+      };
+    }
+
     setCfpStatuses(newStatuses);
-    saveCFPStatus(cfpId, newStatus);
+    localStorage.setItem("cfpStatuses", JSON.stringify(newStatuses));
   };
 
   const filteredCFPs = cfps.filter((cfp) => {
@@ -338,7 +340,7 @@ export default function Home() {
                 sortedAndFilteredCFPs.map((cfp, index) => {
                   const cfpId = createCFPId(cfp);
                   const status = cfpStatuses[cfpId]?.status;
-                  const isClosingSoon = cfp.untilDate - Date.now() < 3 * 24 * 60 * 60 * 1000;
+                  const isClosingSoon = cfp.untilDate - new Date("2025-01-10T22:01:52Z").getTime() < 7 * 24 * 60 * 60 * 1000;
                   return (
                     <article
                       key={index}
@@ -383,7 +385,7 @@ export default function Home() {
                             >
                               ✓
                             </span>
-                            Submitted
+                            {status === "submitted" ? "Unsubmit" : "Submitted"}
                           </button>
                           <button
                             className={`${styles.statusButton} ${
@@ -406,7 +408,7 @@ export default function Home() {
                             >
                               ✕
                             </span>
-                            Not Interested
+                            {status === "ignored" ? "Reinstate" : "Not Interested"}
                           </button>
                         </div>
                       </div>
