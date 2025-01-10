@@ -251,6 +251,7 @@ export default function Home() {
           <div className={styles.headerContent}>
             <div className={styles.filtersContainer}>
               <div className={styles.filterGroup}>
+                <label className={styles.filterLabel}>Name</label>
                 <input
                   type="text"
                   value={searchTerm}
@@ -271,6 +272,7 @@ export default function Home() {
               </div>
 
               <div className={styles.filterGroup}>
+                <label className={styles.filterLabel}>Location</label>
                 <MultiSelect<Continent>
                   options={continents}
                   selectedOptions={selectedContinents}
@@ -290,6 +292,7 @@ export default function Home() {
               </div>
 
               <div className={styles.filterGroup}>
+                <label className={styles.filterLabel}>Proposals</label>
                 <SingleSelect<StatusFilterType>
                   options={statusOptions}
                   value={showStatusFilter}
@@ -300,6 +303,7 @@ export default function Home() {
               </div>
 
               <div className={styles.filterGroup}>
+                <label className={styles.filterLabel}>Sort by</label>
                 <SingleSelect<SortOption>
                   options={sortOptions}
                   value={sortBy}
