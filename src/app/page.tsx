@@ -338,12 +338,13 @@ export default function Home() {
                 sortedAndFilteredCFPs.map((cfp, index) => {
                   const cfpId = createCFPId(cfp);
                   const status = cfpStatuses[cfpId]?.status;
+                  const isClosingSoon = cfp.untilDate - Date.now() < 3 * 24 * 60 * 60 * 1000;
                   return (
                     <article
                       key={index}
                       className={`${styles.card} ${
                         status ? styles[status] : ""
-                      }`}
+                      } ${isClosingSoon ? styles.closingSoon : ""}`}
                     >
                       <h2 className={styles.cardTitle}>{cfp.conf.name}</h2>
                       <div className={styles.cardMeta}>
