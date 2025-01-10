@@ -16,9 +16,12 @@ import { CFPService } from "../services/cfp/cfp.service";
 
 const FILTER_STORAGE_KEY = "cfp-tracker-filters";
 
+type SortOption = "cfpClose" | "eventStart";
+
 interface SavedFilters {
   searchTerm: string;
   selectedContinents: Continent[];
+  sortBy: SortOption;
 }
 
 type StatusFilterType = CFPStatus | "all";
@@ -37,6 +40,7 @@ export default function Home() {
   const [showStatusFilter, setShowStatusFilter] =
     useState<StatusFilterType>(null);
   const [showMinLoading, setShowMinLoading] = useState(true);
+  const [sortBy, setSortBy] = useState<SortOption>("cfpClose");
 
   useEffect(() => {
     const startTime = Date.now();
@@ -87,11 +91,12 @@ export default function Home() {
     try {
       const savedFilters = localStorage.getItem(FILTER_STORAGE_KEY);
       if (savedFilters) {
-        const { searchTerm, selectedContinents } = JSON.parse(
+        const { searchTerm, selectedContinents, sortBy } = JSON.parse(
           savedFilters
         ) as SavedFilters;
         setSearchTerm(searchTerm);
         setSelectedContinents(new Set(selectedContinents));
+        setSortBy(sortBy || "cfpClose");
       }
     } catch (error) {
       console.error("Error loading saved filters:", error);
@@ -106,12 +111,13 @@ export default function Home() {
       const filtersToSave: SavedFilters = {
         searchTerm,
         selectedContinents: Array.from(selectedContinents),
+        sortBy,
       };
       localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filtersToSave));
     } catch (error) {
       console.error("Error saving filters:", error);
     }
-  }, [searchTerm, selectedContinents]);
+  }, [searchTerm, selectedContinents, sortBy]);
 
   const baseContients: Continent[] = [
     "Europe",
@@ -134,6 +140,19 @@ export default function Home() {
     "ignored",
     "all",
   ];
+
+  const sortOptions: SortOption[] = ["cfpClose", "eventStart"];
+
+  const getSortLabel = (option: SortOption): string => {
+    switch (option) {
+      case "cfpClose":
+        return "CFP Close Date";
+      case "eventStart":
+        return "Event Start Date";
+      default:
+        return "Unknown";
+    }
+  };
 
   const handleStatusChange = (newStatus: StatusFilterType) => {
     setShowStatusFilter(newStatus);
@@ -175,6 +194,13 @@ export default function Home() {
     return matchesSearch && matchesContinent && matchesStatus;
   });
 
+  const sortedAndFilteredCFPs = filteredCFPs.sort((a, b) => {
+    if (sortBy === "eventStart") {
+      return a.conf.date[0] - b.conf.date[0];
+    }
+    return a.untilDate - b.untilDate;
+  });
+
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleDateString("en-US", {
       year: "numeric",
@@ -211,7 +237,7 @@ export default function Home() {
         element.title = element.textContent || "";
       }
     });
-  }, [filteredCFPs]);
+  }, [sortedAndFilteredCFPs]);
 
   return (
     <div className={styles.container}>
@@ -272,6 +298,16 @@ export default function Home() {
                   getLabel={getStatusLabel}
                 />
               </div>
+
+              <div className={styles.filterGroup}>
+                <SingleSelect<SortOption>
+                  options={sortOptions}
+                  value={sortBy}
+                  onChange={setSortBy}
+                  placeholder="Sort by"
+                  getLabel={getSortLabel}
+                />
+              </div>
             </div>
           </div>
         </header>
@@ -294,8 +330,8 @@ export default function Home() {
         {!loading && !error && !showMinLoading && (
           <main className={styles.main}>
             <div className={styles.grid} ref={gridRef}>
-              {filteredCFPs.length > 0 ? (
-                filteredCFPs.map((cfp, index) => {
+              {sortedAndFilteredCFPs.length > 0 ? (
+                sortedAndFilteredCFPs.map((cfp, index) => {
                   const cfpId = createCFPId(cfp);
                   const status = cfpStatuses[cfpId]?.status;
                   return (
