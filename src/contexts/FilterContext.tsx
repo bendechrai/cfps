@@ -22,6 +22,7 @@ const FILTER_STORAGE_KEY = 'cfp-tracker-filters';
 interface SavedFilters {
   searchTerm: string;
   selectedContinents: Continent[];
+  statusFilter: StatusFilterType;
   sortBy: SortOption;
 }
 
@@ -37,9 +38,10 @@ export function FilterProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const savedFilters = localStorage.getItem(FILTER_STORAGE_KEY);
     if (savedFilters) {
-      const { searchTerm, selectedContinents, sortBy } = JSON.parse(savedFilters) as SavedFilters;
+      const { searchTerm, selectedContinents, statusFilter, sortBy } = JSON.parse(savedFilters) as SavedFilters;
       setSearchTerm(searchTerm);
       setSelectedContinents(new Set(selectedContinents));
+      setStatusFilter(statusFilter);
       setSortBy(sortBy);
     }
   }, []);
@@ -49,10 +51,11 @@ export function FilterProvider({ children }: { children: ReactNode }) {
     const filtersToSave: SavedFilters = {
       searchTerm,
       selectedContinents: Array.from(selectedContinents),
+      statusFilter,
       sortBy,
     };
     localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filtersToSave));
-  }, [searchTerm, selectedContinents, sortBy]);
+  }, [searchTerm, selectedContinents, statusFilter, sortBy]);
 
   return (
     <FilterContext.Provider
