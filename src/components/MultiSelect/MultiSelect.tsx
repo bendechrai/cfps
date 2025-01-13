@@ -5,43 +5,43 @@ import styles from './MultiSelect.module.css';
  * Props for the MultiSelect component
  * @template T The type of the option values
  */
-interface MultiSelectProps<T extends string | number> {
+interface MultiSelectProps<T> {
   /** Array of available options */
   options: T[];
   /** Set of currently selected options */
-  selectedOptions: Set<T>;
+  selected: Set<T>;
   /** Callback when selection changes */
   onChange: (selected: Set<T>) => void;
-  /** Placeholder text when no options are selected */
-  placeholder: string;
+  /** Function to get the label for an option */
+  getOptionLabel: (option: T) => string;
 }
 
 /**
  * A dropdown component that allows selecting multiple options from a list
- * @template T The type of the option values (must be string or number)
+ * @template T The type of the option values
  */
-export function MultiSelect<T extends string | number>({ 
-  options, 
-  selectedOptions, 
-  onChange, 
-  placeholder 
+export function MultiSelect<T>({
+  options,
+  selected,
+  onChange,
+  getOptionLabel
 }: MultiSelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
-    }
+    };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const toggleOption = (option: T) => {
-    const newSelected = new Set(selectedOptions);
+    const newSelected = new Set(selected);
     if (newSelected.has(option)) {
       newSelected.delete(option);
     } else {
@@ -50,71 +50,37 @@ export function MultiSelect<T extends string | number>({
     onChange(newSelected);
   };
 
-  const removeOption = (option: T, event?: React.MouseEvent<HTMLSpanElement>) => {
-    if (event) {
-      event.stopPropagation(); // Prevent opening dropdown
-    }
-    const newSelected = new Set(selectedOptions);
-    newSelected.delete(option);
-    onChange(newSelected);
-  };
-
-  const handleKeyDown = (option: T, event: React.KeyboardEvent<HTMLSpanElement>) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      removeOption(option);
-    }
-  };
+  const selectedText = selected.size > 0
+    ? Array.from(selected).map(getOptionLabel).join(', ')
+    : 'Select options...';
 
   return (
-    <div className={styles.container} ref={dropdownRef}>
+    <div className={styles.container} ref={containerRef}>
       <button
         type="button"
-        className={`${styles.trigger} ${isOpen ? styles.open : ''}`}
         onClick={() => setIsOpen(!isOpen)}
-        aria-haspopup="listbox"
+        className={styles.trigger}
         aria-expanded={isOpen}
       >
-        <div className={styles.pillContainer}>
-          {selectedOptions.size === 0 ? (
-            <span className={styles.placeholder}>{placeholder}</span>
-          ) : (
-            Array.from(selectedOptions).map(option => (
-              <span key={option} className={styles.pill}>
-                {String(option)}
-                <span
-                  role="button"
-                  tabIndex={0}
-                  className={styles.pillRemove}
-                  onClick={(e) => removeOption(option, e)}
-                  onKeyDown={(e) => handleKeyDown(option, e)}
-                  aria-label={`Remove ${String(option)}`}
-                >
-                  ×
-                </span>
-              </span>
-            ))
-          )}
-        </div>
+        <span className={styles.selectedText}>{selectedText}</span>
+        <span className={styles.arrow}>▼</span>
       </button>
 
       {isOpen && (
-        <div 
-          className={styles.dropdown}
-          role="listbox"
-          aria-label={placeholder}
-          aria-multiselectable="true"
-        >
-          {options.map((option) => (
+        <div className={styles.dropdown}>
+          {options.map((option, index) => (
             <button
-              key={option}
-              type="button"
-              className={`${styles.option} ${selectedOptions.has(option) ? styles.selected : ''}`}
+              key={index}
+              className={`${styles.option} ${selected.has(option) ? styles.selected : ''}`}
               onClick={() => toggleOption(option)}
-              role="option"
-              aria-selected={selectedOptions.has(option)}
             >
-              {String(option)}
+              <input
+                type="checkbox"
+                checked={selected.has(option)}
+                onChange={() => {}}
+                className={styles.checkbox}
+              />
+              <span>{getOptionLabel(option)}</span>
             </button>
           ))}
         </div>

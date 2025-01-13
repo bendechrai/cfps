@@ -1,16 +1,18 @@
 import { CFP } from "../../utils/types";
-import { CFPStatus } from "../../utils/cfpStatus";
+import { createCFPId } from "../../utils/cfpStatus";
 import styles from "./CFPCard.module.css";
 import { formatDate } from "../../utils/dateUtils";
+import { useCFP } from "../../contexts/CFPContext";
 
 interface CFPCardProps {
   cfp: CFP;
-  status: CFPStatus | undefined;
   isClosingSoon: boolean;
-  onStatusChange: (status: CFPStatus | null) => void;
 }
 
-export const CFPCard = ({ cfp, status, isClosingSoon, onStatusChange }: CFPCardProps) => {
+export const CFPCard = ({ cfp, isClosingSoon }: CFPCardProps) => {
+  const { cfpStatuses, updateCFPStatus } = useCFP();
+  const status = cfpStatuses[createCFPId(cfp)]?.status;
+
   return (
     <article
       className={`${styles.card} ${status ? styles[status] : ""} ${
@@ -38,7 +40,10 @@ export const CFPCard = ({ cfp, status, isClosingSoon, onStatusChange }: CFPCardP
               status === "submitted" ? styles.active : ""
             }`}
             onClick={() =>
-              onStatusChange(status === "submitted" ? null : "submitted")
+              updateCFPStatus(
+                createCFPId(cfp),
+                status === "submitted" ? null : "submitted"
+              )
             }
           >
             <span
@@ -55,7 +60,10 @@ export const CFPCard = ({ cfp, status, isClosingSoon, onStatusChange }: CFPCardP
               status === "ignored" ? styles.active : ""
             }`}
             onClick={() =>
-              onStatusChange(status === "ignored" ? null : "ignored")
+              updateCFPStatus(
+                createCFPId(cfp),
+                status === "ignored" ? null : "ignored"
+              )
             }
           >
             <span
