@@ -30,7 +30,16 @@ export class CFPService {
     ];
   }
 
-  public async fetchCFPs(): Promise<CFP[]> {
+  async fetchCFPs(): Promise<CFP[]> {
+    try {
+      return await this.getCFPs();
+    } catch (error) {
+      console.error("Error fetching CFPs:", error);
+      throw new Error("Failed to load CFPs. Please try again later.");
+    }
+  }
+
+  async getCFPs(): Promise<CFP[]> {
     try {
       // Fetch from all sources in parallel
       const allCFPs = await Promise.all(

@@ -38,33 +38,23 @@ export default function Home() {
   >({});
   const [showStatusFilter, setShowStatusFilter] =
     useState<StatusFilterType>(null);
-  const [showMinLoading, setShowMinLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortOption>("cfpClose");
 
   useEffect(() => {
-    const startTime = Date.now();
-    const minLoadingTime = 500; // Minimum load time to show off the tractor!
-
-    const fetchCFPs = async () => {
+    const fetchData = async () => {
       try {
         const cfpService = CFPService.getInstance();
-        const activeCfps = await cfpService.fetchCFPs();
-        setCfps(activeCfps);
+        const fetchedCFPs = await cfpService.fetchCFPs();
+        setCfps(fetchedCFPs);
       } catch (error) {
         console.error("Error fetching CFPs:", error);
         setError("Failed to load CFPs. Please try again later.");
       } finally {
-        const elapsedTime = Date.now() - startTime;
-        const remainingTime = Math.max(0, minLoadingTime - elapsedTime);
-
-        setTimeout(() => {
-          setLoading(false);
-          setShowMinLoading(false);
-        }, remainingTime);
+        setLoading(false);
       }
     };
 
-    fetchCFPs();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -318,7 +308,7 @@ export default function Home() {
           </div>
         </header>
 
-        {(loading || showMinLoading) && (
+        {loading && (
           <div className={styles.messageContainer}>
             <div className={styles.loadingMessage}>
               <span className={styles.loadingEmoji}>🚜</span>
@@ -333,7 +323,7 @@ export default function Home() {
           </div>
         )}
 
-        {!loading && !error && !showMinLoading && (
+        {!loading && !error && (
           <main className={styles.main}>
             <div className={styles.grid} ref={gridRef}>
               {sortedAndFilteredCFPs.length > 0 ? (
