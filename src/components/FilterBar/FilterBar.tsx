@@ -17,6 +17,7 @@ export const FilterBar = () => {
     setStatusFilter,
     sortBy,
     setSortBy,
+    isLoading,
   } = useFilter();
 
   const baseContients: Continent[] = [
@@ -111,7 +112,7 @@ export const FilterBar = () => {
         <label className={styles.filterLabel}>Status</label>
         <SingleSelect
           options={statusOptions}
-          selected={statusFilter}
+          selected={isLoading ? undefined : statusFilter}
           onChange={setStatusFilter}
           getOptionLabel={getStatusLabel}
         />
@@ -121,7 +122,7 @@ export const FilterBar = () => {
         <label className={styles.filterLabel}>Sort By</label>
         <SingleSelect
           options={sortOptions}
-          selected={sortBy}
+          selected={isLoading ? undefined : sortBy}
           onChange={setSortBy}
           getOptionLabel={getSortLabel}
         />

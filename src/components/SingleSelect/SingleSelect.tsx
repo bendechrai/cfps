@@ -9,11 +9,13 @@ interface SingleSelectProps<T> {
   /** Array of available options */
   options: readonly T[];
   /** Currently selected value */
-  selected: T;
+  selected: T | undefined;
   /** Callback when selection changes */
   onChange: (value: T) => void;
   /** Function to convert option value to display label */
   getOptionLabel: (option: T) => string;
+  /** Placeholder text to show when no value is selected */
+  placeholder?: string;
 }
 
 /**
@@ -24,7 +26,8 @@ export function SingleSelect<T>({
   options, 
   selected, 
   onChange,
-  getOptionLabel 
+  getOptionLabel,
+  placeholder = "Loading..." 
 }: SingleSelectProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -42,15 +45,13 @@ export function SingleSelect<T>({
 
   return (
     <div className={styles.container} ref={containerRef}>
-      <button
-        type="button"
+      <div 
+        className={`${styles.trigger} ${isOpen ? styles.open : ''}`}
         onClick={() => setIsOpen(!isOpen)}
-        className={styles.trigger}
-        aria-expanded={isOpen}
       >
-        <span>{getOptionLabel(selected)}</span>
+        {selected !== undefined ? getOptionLabel(selected) : placeholder}
         <span className={styles.arrow}>▼</span>
-      </button>
+      </div>
 
       {isOpen && (
         <div className={styles.dropdown}>

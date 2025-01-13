@@ -11,13 +11,12 @@ interface FilterContextType {
   setSearchTerm: (term: string) => void;
   selectedContinents: Set<Continent>;
   setSelectedContinents: (continents: Set<Continent>) => void;
-  statusFilter: StatusFilterType;
+  statusFilter: StatusFilterType | undefined;
   setStatusFilter: (status: StatusFilterType) => void;
-  sortBy: SortOption;
+  sortBy: SortOption | undefined;
   setSortBy: (option: SortOption) => void;
+  isLoading: boolean;
 }
-
-const FILTER_STORAGE_KEY = 'cfp-tracker-filters';
 
 interface SavedFilters {
   searchTerm: string;
@@ -26,13 +25,16 @@ interface SavedFilters {
   sortBy: SortOption;
 }
 
+const FILTER_STORAGE_KEY = 'cfp-tracker-filters';
+
 const FilterContext = createContext<FilterContextType | undefined>(undefined);
 
 export function FilterProvider({ children }: { children: ReactNode }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedContinents, setSelectedContinents] = useState<Set<Continent>>(new Set());
-  const [statusFilter, setStatusFilter] = useState<StatusFilterType>(null);
-  const [sortBy, setSortBy] = useState<SortOption>('cfpClose');
+  const [statusFilter, setStatusFilter] = useState<StatusFilterType | undefined>(undefined);
+  const [sortBy, setSortBy] = useState<SortOption | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Load saved filters
   useEffect(() => {
@@ -43,7 +45,11 @@ export function FilterProvider({ children }: { children: ReactNode }) {
       setSelectedContinents(new Set(selectedContinents));
       setStatusFilter(statusFilter);
       setSortBy(sortBy);
+    } else {
+      setStatusFilter(null);
+      setSortBy('cfpClose');
     }
+    setIsLoading(false);
   }, []);
 
   // Save filters when they change
@@ -68,6 +74,7 @@ export function FilterProvider({ children }: { children: ReactNode }) {
         setStatusFilter,
         sortBy,
         setSortBy,
+        isLoading,
       }}
     >
       {children}
