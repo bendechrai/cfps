@@ -330,7 +330,7 @@ export default function Home() {
                 sortedAndFilteredCFPs.map((cfp, index) => {
                   const cfpId = createCFPId(cfp);
                   const status = cfpStatuses[cfpId]?.status;
-                  const isClosingSoon = cfp.untilDate - new Date("2025-01-10T22:01:52Z").getTime() < 7 * 24 * 60 * 60 * 1000;
+                  const isClosingSoon = cfp.untilDate - new Date().getTime() < 3 * 24 * 60 * 60 * 1000;
                   return (
                     <article
                       key={index}
