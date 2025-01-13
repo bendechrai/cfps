@@ -1,6 +1,6 @@
 import { CFP } from "../../utils/types";
 import { CFPStatus } from "../../utils/cfpStatus";
-import styles from "../../app/cfps.module.css";
+import styles from "./CFPCard.module.css";
 import { formatDate } from "../../utils/dateUtils";
 
 interface CFPCardProps {

@@ -1,0 +1,31 @@
+.footer {
+  margin-top: auto;
+  border-top: 1px solid #e5e7eb;
+  padding: 1rem;
+  color: #6b7280;
+}
+
+.footerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 0.875rem;
+}
+
+.footerContent a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.footerContent a:hover {
+  text-decoration: underline;
+}
+
+.blueskyIcon,
+.githubIcon {
+  display: inline-block;
+  height: 1em;
+  width: 1em;
+  vertical-align: -0.125em;
+  fill: currentColor;
+}

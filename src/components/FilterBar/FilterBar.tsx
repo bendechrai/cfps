@@ -1,8 +1,8 @@
-import { Continent } from "../utils/types";
-import { CFPStatus } from "../utils/cfpStatus";
-import styles from "../app/cfps.module.css";
-import { MultiSelect } from "./MultiSelect";
-import { SingleSelect } from "./SingleSelect";
+import { Continent } from "../../utils/types";
+import { CFPStatus } from "../../utils/cfpStatus";
+import styles from "./FilterBar.module.css";
+import { MultiSelect } from "../MultiSelect/MultiSelect";
+import { SingleSelect } from "../SingleSelect/SingleSelect";
 
 type SortOption = "cfpClose" | "eventStart";
 type StatusFilterType = CFPStatus | "all" | null;

@@ -1,4 +1,4 @@
-import styles from "../app/cfps.module.css";
+import styles from "./LoadingState.module.css";
 
 export const LoadingState = () => (
   <div className={styles.messageContainer}>

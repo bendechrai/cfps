@@ -1,4 +1,4 @@
-import styles from "../app/cfps.module.css";
+import styles from "./PageFooter.module.css";
 
 export const PageFooter = () => (
   <footer className={styles.footer}>

@@ -1,4 +1,4 @@
-import styles from "../app/cfps.module.css";
+import styles from "./ErrorState.module.css";
 
 interface ErrorStateProps {
   message: string;

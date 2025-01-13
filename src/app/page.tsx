@@ -7,10 +7,10 @@ import { getContinent } from "../utils/countryToContinent";
 import { CFPStatus, createCFPId, getCFPStatuses } from "../utils/cfpStatus";
 import { CFPService } from "../services/cfp/cfp.service";
 import { CFPCard } from "../components/CFPCard/CFPCard";
-import { FilterBar } from "../components/FilterBar";
-import { LoadingState } from "../components/LoadingState";
-import { ErrorState } from "../components/ErrorState";
-import { PageFooter } from "../components/PageFooter";
+import { FilterBar } from "../components/FilterBar/FilterBar";
+import { LoadingState } from "../components/LoadingState/LoadingState";
+import { ErrorState } from "../components/ErrorState/ErrorState";
+import { PageFooter } from "../components/PageFooter/PageFooter";
 
 const FILTER_STORAGE_KEY = "cfp-tracker-filters";
 

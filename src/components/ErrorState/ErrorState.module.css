@@ -1,0 +1,11 @@
+.messageContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.errorMessage {
+  color: #ef4444;
+  text-align: center;
+}
