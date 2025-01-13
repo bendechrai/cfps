@@ -50,38 +50,51 @@ export function MultiSelect<T>({
     onChange(newSelected);
   };
 
-  const selectedText = selected.size > 0
-    ? Array.from(selected).map(getOptionLabel).join(', ')
-    : 'Select options...';
+  const removeOption = (option: T, event: React.MouseEvent) => {
+    event.stopPropagation();
+    const newSelected = new Set(selected);
+    newSelected.delete(option);
+    onChange(newSelected);
+  };
 
   return (
     <div className={styles.container} ref={containerRef}>
-      <button
-        type="button"
+      <div 
+        className={`${styles.trigger} ${isOpen ? styles.open : ''}`}
         onClick={() => setIsOpen(!isOpen)}
-        className={styles.trigger}
-        aria-expanded={isOpen}
       >
-        <span className={styles.selectedText}>{selectedText}</span>
+        <div className={styles.pillContainer}>
+          {selected.size === 0 ? (
+            <span className={styles.placeholder}>All continents</span>
+          ) : (
+            Array.from(selected).map((option) => (
+              <span key={getOptionLabel(option)} className={styles.pill}>
+                {getOptionLabel(option)}
+                <button
+                  type="button"
+                  className={styles.removeButton}
+                  onClick={(e) => removeOption(option, e)}
+                  aria-label={`Remove ${getOptionLabel(option)}`}
+                >
+                  ×
+                </button>
+              </span>
+            ))
+          )}
+        </div>
         <span className={styles.arrow}>▼</span>
-      </button>
+      </div>
 
       {isOpen && (
         <div className={styles.dropdown}>
-          {options.map((option, index) => (
-            <button
-              key={index}
+          {options.map((option) => (
+            <div
+              key={getOptionLabel(option)}
               className={`${styles.option} ${selected.has(option) ? styles.selected : ''}`}
               onClick={() => toggleOption(option)}
             >
-              <input
-                type="checkbox"
-                checked={selected.has(option)}
-                onChange={() => {}}
-                className={styles.checkbox}
-              />
-              <span>{getOptionLabel(option)}</span>
-            </button>
+              {getOptionLabel(option)}
+            </div>
           ))}
         </div>
       )}

@@ -96,16 +96,6 @@ export const FilterBar = () => {
           onChange={setSelectedContinents}
           getOptionLabel={(continent) => continent}
         />
-        {selectedContinents.size > 0 && (
-          <button
-            type="button"
-            className={styles.clearButton}
-            onClick={() => setSelectedContinents(new Set())}
-            aria-label="Clear location filter"
-          >
-            ×
-          </button>
-        )}
       </div>
 
       <div className={styles.filterGroup}>

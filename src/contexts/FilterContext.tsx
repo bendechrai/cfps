@@ -54,14 +54,17 @@ export function FilterProvider({ children }: { children: ReactNode }) {
 
   // Save filters when they change
   useEffect(() => {
-    const filtersToSave: SavedFilters = {
-      searchTerm,
-      selectedContinents: Array.from(selectedContinents),
-      statusFilter,
-      sortBy,
-    };
-    localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filtersToSave));
-  }, [searchTerm, selectedContinents, statusFilter, sortBy]);
+    // Only save if we're not in the loading state and have valid values
+    if (!isLoading && statusFilter !== undefined && sortBy !== undefined) {
+      const filtersToSave: SavedFilters = {
+        searchTerm,
+        selectedContinents: Array.from(selectedContinents),
+        statusFilter,
+        sortBy,
+      };
+      localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filtersToSave));
+    }
+  }, [searchTerm, selectedContinents, statusFilter, sortBy, isLoading]);
 
   return (
     <FilterContext.Provider
