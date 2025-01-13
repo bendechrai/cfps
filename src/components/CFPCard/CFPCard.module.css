@@ -12,12 +12,12 @@
   height: 100%;
 }
 
-.card.closingSoon::before {
-  content: "⚠️ Closing Soon";
+.closingSoonBanner {
   position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.25rem;
   top: 1.5rem;
   right: -3.5rem;
   background: rgba(251, 191, 36, 0.5);

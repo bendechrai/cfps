@@ -4,6 +4,23 @@ import styles from "./CFPCard.module.css";
 import { formatDate } from "../../utils/dateUtils";
 import { useCFP } from "../../contexts/CFPContext";
 
+const WarningIcon = () => (
+  <svg 
+    className={styles.warningIcon}
+    width="12" 
+    height="12" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="#4a5568" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round"
+  >
+    <path d="M12 8v5M12 16h0" />
+    <path d="M12 2.5L2 19.5h20L12 2.5z" />
+  </svg>
+);
+
 interface CFPCardProps {
   cfp: CFP;
   isClosingSoon: boolean;
@@ -14,11 +31,13 @@ export const CFPCard = ({ cfp, isClosingSoon }: CFPCardProps) => {
   const status = cfpStatuses[createCFPId(cfp)]?.status;
 
   return (
-    <article
-      className={`${styles.card} ${status ? styles[status] : ""} ${
-        isClosingSoon ? styles.closingSoon : ""
-      }`}
-    >
+    <article className={`${styles.card} ${status ? styles[status] : ""}`}>
+      {isClosingSoon && (
+        <div className={styles.closingSoonBanner}>
+          <WarningIcon />
+          <span>Closing soon!</span>
+        </div>
+      )}
       <h2 className={styles.cardTitle}>{cfp.conf.name}</h2>
       <div className={styles.cardMeta}>
         <p>Location: {cfp.conf.location}</p>
