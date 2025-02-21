@@ -33,8 +33,9 @@ export function CFPProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const cfpService = CFPService.getInstance();
-        const fetchedCFPs = await cfpService.fetchCFPs();
+        const response = await fetch('/api/cfps');
+        if (!response.ok) throw new Error('Failed to fetch CFPs');
+        const fetchedCFPs = await response.json();
         setCfps(fetchedCFPs);
       } catch (error) {
         console.error("Error fetching CFPs:", error);
