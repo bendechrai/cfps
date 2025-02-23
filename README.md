@@ -41,7 +41,7 @@ A modern web application to help speakers track and manage conference speaking o
    npm run dev
    ```
 
-4. Open [http://localhost:9876](http://localhost:9876) in your browser
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ## Usage
 
