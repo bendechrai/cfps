@@ -31,7 +31,7 @@ export const FilterBar = () => {
   ];
 
   const continents: Continent[] = cfps.some(
-    (cfp) => getContinent(cfp.conf.location) === "Unknown"
+    (cfp) => getContinent(cfp.location) === "Unknown"
   )
     ? [...baseContients, "Unknown"]
     : baseContients;

@@ -1,5 +1,5 @@
-import { CFP } from "../../../utils/types";
 import { ICFPSource, RawDevelopersEventsCFP, CFPSourceConfig } from "../types";
+import { CFP } from "../../../utils/types";
 
 export class DevelopersEventsCFPSource implements ICFPSource {
   private config: CFPSourceConfig;
@@ -24,20 +24,19 @@ export class DevelopersEventsCFPSource implements ICFPSource {
 
   private transformCFP(raw: RawDevelopersEventsCFP): CFP {
     return {
-      conf: {
-        name: raw.conf.name,
-        date: raw.conf.date,
-        hyperlink: raw.conf.hyperlink,
-        status: raw.conf.status,
-        location: raw.conf.location,
-      },
-      link: raw.link,
-      until: new Date(raw.untilDate).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }),
-      untilDate: raw.untilDate,
+      id: `devents-${raw.conf.name}-${raw.untilDate}`,
+      name: raw.conf.name,
+      cfpUrl: raw.link,
+      eventUrl: raw.conf.hyperlink,
+      cfpEndDate: raw.untilDate,
+      eventStartDate: raw.conf.date[0],
+      eventEndDate: raw.conf.date[1],
+      location: raw.conf.location,
+      status: raw.conf.status as 'open' | 'closed',
+      source: 'developers-events',
+      references: {
+        'developers-events': raw.link
+      }
     };
   }
 }

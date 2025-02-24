@@ -1,0 +1,48 @@
+{
+  "events": [
+    {
+      "name": "PHPers Summit 2025",
+      "url_friendly_name": "phpers-summit-2025",
+      "start_date": "2025-05-23T00:00:00+02:00",
+      "end_date": "2025-05-25T00:00:00+02:00",
+      "description": "The largest PHP conference in Poland is approaching fast!\r\n\r\nWe are honored to invite you to the 9th edition of the PHPers Summit, which will be our biggest event so far. We expect 1000+ participants and 5 tracks, making it one of the largest PHP conferences in the region!\r\n\r\nAtmosphere is an aspect of every human meeting that is very close to us. Our events are for every soul, no matter how different and unique they are. If PHPers Summit were a person, it would be someone very calm, smiling, and open. Accept it, feel good and safe.\r\n\r\nBefore we launch the ticket sales, we reveal to you the prices in each pool.\r\n\r\nThe conference on May 24, 2025 is being held on the grounds of the Poznan International Fair. Hall 15 (Pozna\u0144 Congress Center). Enter from the gate 10 (south entrance)",
+      "stub": null,
+      "href": "https://summit.phpers.pl/en/",
+      "tz_continent": "Europe",
+      "tz_place": "Warsaw",
+      "attendee_count": 1,
+      "attending": false,
+      "event_average_rating": 0,
+      "event_comments_count": 0,
+      "tracks_count": 0,
+      "talks_count": 0,
+      "icon": null,
+      "location": "Mi\u0119dzynarodowe Targi Pozna\u0144",
+      "rejection_reason": null,
+      "images": [],
+      "tags": [
+        "php",
+        "symfony",
+        "laravel",
+        "software architecture",
+        "soft skills"
+      ],
+      "uri": "https://api.joind.in/v2.1/events/8557",
+      "verbose_uri": "https://api.joind.in/v2.1/events/8557?verbose=yes",
+      "comments_uri": "https://api.joind.in/v2.1/events/8557/comments",
+      "talks_uri": "https://api.joind.in/v2.1/events/8557/talks",
+      "tracks_uri": "https://api.joind.in/v2.1/events/8557/tracks",
+      "attending_uri": "https://api.joind.in/v2.1/events/8557/attending",
+      "images_uri": "https://api.joind.in/v2.1/events/8557/images",
+      "hosts_uri": "https://api.joind.in/v2.1/events/8557/hosts",
+      "pending": 0,
+      "website_uri": "https://joind.in/event/phpers-summit-2025",
+      "attendees_uri": "https://api.joind.in/v2.1/events/8557/attendees"
+    }
+  ],
+  "meta": {
+    "count": 1,
+    "total": 1,
+    "this_page": "https://api.joind.in/v2.1/events?filter=cfp&resultsperpage=20"
+  }
+}

@@ -1,19 +1,19 @@
-import { CFP } from "../../utils/types";
 import { createCFPId } from "../../utils/cfpStatus";
 import styles from "./CFPCard.module.css";
 import { formatDate } from "../../utils/dateUtils";
 import { useCFP } from "../../contexts/CFPContext";
+import { CFP } from "@/utils/types";
 
 const WarningIcon = () => (
-  <svg 
+  <svg
     className={styles.warningIcon}
-    width="12" 
-    height="12" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="#4a5568" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
+    width="12"
+    height="12"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#4a5568"
+    strokeWidth="2"
+    strokeLinecap="round"
     strokeLinejoin="round"
   >
     <path d="M12 8v5M12 16h0" />
@@ -38,15 +38,19 @@ export const CFPCard = ({ cfp, isClosingSoon }: CFPCardProps) => {
           <span>Closing soon!</span>
         </div>
       )}
-      <h2 className={styles.cardTitle}>{cfp.conf.name}</h2>
+      <h2 className={styles.cardTitle}>
+        <a href={cfp.eventUrl} target="_blank" rel="noopener noreferrer">
+          {cfp.name}
+        </a>
+      </h2>
       <div className={styles.cardMeta}>
-        <p>Location: {cfp.conf.location}</p>
-        <p>CFP Closes: {formatDate(cfp.untilDate)}</p>
-        <p>Event Date: {formatDate(cfp.conf.date[0])}</p>
+        <p>Location: {cfp.location}</p>
+        <p>CFP Closes: {formatDate(cfp.cfpEndDate)}</p>
+        <p>Event Date: {formatDate(cfp.eventStartDate)}</p>
       </div>
       <div className={styles.cardActions}>
         <a
-          href={cfp.link}
+          href={cfp.cfpUrl}
           target="_blank"
           rel="noopener noreferrer"
           className={styles.cardLink}

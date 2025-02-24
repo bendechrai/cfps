@@ -1,10 +1,9 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { CFP } from '../utils/types';
 import { CFPStatus, CFPStatusData, CFP_STATUS_KEY } from '../utils/cfpStatus';
-import { CFPService } from '../services/cfp/cfp.service';
 import { getCFPStatuses } from '../utils/cfpStatus';
+import { CFP } from '@/utils/types';
 
 interface CFPContextType {
   cfps: CFP[];

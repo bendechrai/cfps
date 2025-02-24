@@ -31,6 +31,13 @@
   letter-spacing: 0.025em;
   backdrop-filter: blur(2px);
   z-index: 1;
+  transition: opacity 0.4s, top 0.4s, right 0.4s;
+}
+
+.card:hover .closingSoonBanner {
+  opacity: 0.4;
+  top: 0.5rem;
+  right: -5rem;
 }
 
 .cardTitle {
@@ -48,6 +55,15 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.cardTitle a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.cardTitle a:hover {
+  text-decoration: underline;
 }
 
 .cardMeta {

@@ -1,4 +1,4 @@
-import { CFP } from './types';
+import { CFP } from "./types";
 
 /**
  * Possible status values for a CFP
@@ -27,8 +27,8 @@ export const CFP_STATUS_KEY = 'cfp-tracker-status';
  * @param cfp The CFP to create an ID for
  * @returns A unique string identifier
  */
-export const createCFPId = (cfp: Pick<CFP, 'conf' | 'untilDate'>): string => {
-  return `${cfp.conf.name}-${cfp.untilDate}`;
+export const createCFPId = (cfp: CFP): string => {
+  return `${cfp.source}-${cfp.id}`;
 };
 
 /**

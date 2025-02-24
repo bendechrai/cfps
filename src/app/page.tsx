@@ -53,12 +53,12 @@ function CFPGrid() {
 
   const filteredCFPs = cfps
     .filter((cfp) => {
-      const matchesSearch = cfp.conf.name
+      const matchesSearch = cfp.name
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
       const matchesContinent =
         selectedContinents.size === 0 ||
-        selectedContinents.has(getContinent(cfp.conf.location));
+        selectedContinents.has(getContinent(cfp.location));
       const cfpId = createCFPId(cfp);
       const currentStatus = cfpStatuses[cfpId]?.status;
       const matchesStatus =
@@ -71,9 +71,9 @@ function CFPGrid() {
     })
     .sort((a, b) => {
       if (sortBy === "eventStart") {
-        return a.conf.date[0] - b.conf.date[0];
+        return a.eventStartDate - b.eventStartDate;
       }
-      return a.untilDate - b.untilDate;
+      return a.cfpEndDate - b.cfpEndDate;
     });
 
   return (
@@ -83,7 +83,7 @@ function CFPGrid() {
       ) : (
         filteredCFPs.map((cfp) => {
           const isClosingSoon =
-            cfp.untilDate - new Date().getTime() < 3 * 24 * 60 * 60 * 1000;
+            cfp.cfpEndDate - new Date().getTime() < 3 * 24 * 60 * 60 * 1000;
           return (
             <CFPCard
               key={createCFPId(cfp)}

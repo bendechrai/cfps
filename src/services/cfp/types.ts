@@ -16,6 +16,17 @@ export interface RawDevelopersEventsCFP {
   untilDate: number;
 }
 
+export interface RawJoindInCFP {
+  name: string;
+  website_uri: string;
+  start_date: string;
+  end_date: string;
+  location: string;
+  tags: string[];
+  href: string;
+  cfpEndDate?: number; // Optional as it's fetched separately
+}
+
 export interface CFPSourceConfig {
   enabled: boolean;
   url: string;
