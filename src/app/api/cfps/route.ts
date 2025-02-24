@@ -2,6 +2,17 @@ import { NextResponse } from "next/server";
 import { CFPService } from "@/services/cfp/cfp.service";
 import arcjet, { detectBot, tokenBucket } from "@arcjet/next";
 
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
+  .split(",")
+  .filter(Boolean);
+const corsHeaders = {
+  "Access-Control-Allow-Origin": allowedOrigins.join(", "),
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers":
+    "Content-Type, Authorization, X-Requested-With",
+  "Access-Control-Allow-Credentials": "true",
+};
+
 const aj = arcjet({
   key: process.env.ARCJET_KEY!,
   rules: [
@@ -25,12 +36,12 @@ export async function GET(req: Request) {
     if (decision.reason.isRateLimit()) {
       return NextResponse.json(
         { error: "Too Many Requests", reason: decision.reason },
-        { status: 429 }
+        { status: 429, headers: corsHeaders }
       );
     } else {
       return NextResponse.json(
         { error: "Forbidden", reason: decision.reason },
-        { status: 403 }
+        { status: 403, headers: corsHeaders }
       );
     }
   }
@@ -38,12 +49,16 @@ export async function GET(req: Request) {
   try {
     const cfpService = CFPService.getInstance();
     const cfps = await cfpService.fetchCFPs();
-    return NextResponse.json(cfps);
+    return NextResponse.json(cfps, { headers: corsHeaders });
   } catch (error) {
     console.error("Error fetching CFPs:", error);
     return NextResponse.json(
       { error: "Failed to fetch CFPs" },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
+}
+
+export async function OPTIONS(req: Request) {
+  return NextResponse.json({}, { headers: corsHeaders });
 }
