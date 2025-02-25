@@ -5,36 +5,37 @@ interface JoindInResponse {
   events: RawJoindInCFP[];
 }
 
-export class JoindInCFPSource implements ICFPSource {
+export class JoindInCFPSource implements ICFPSource<RawJoindInCFP> {
   private config: CFPSourceConfig;
 
   constructor(config: CFPSourceConfig) {
     this.config = config;
   }
 
-  async fetchCFPs(): Promise<CFP[]> {
+  getName(): string {
+    return "joindin";
+  }
+
+  async fetchRawData(): Promise<RawJoindInCFP[]> {
     if (!this.config.enabled) return [];
 
     try {
-      const rawCFPs = await this.fetchRawCFPs();
-      const cfpsWithEndDates = await this.enrichWithCFPEndDates(rawCFPs);
-      return cfpsWithEndDates
-        .filter((cfp): cfp is Required<RawJoindInCFP> => cfp.cfpEndDate !== undefined)
-        .map(this.transformCFP);
+      const response = await fetch(this.config.url);
+      if (!response.ok) throw new Error("Failed to fetch CFPs from joind.in");
+      const data: JoindInResponse = await response.json();
+
+      // Enrich the data with CFP end dates before caching
+      const enrichedData = await this.enrichWithCFPEndDates(data.events);
+      return enrichedData;
     } catch (error) {
       console.error("Error fetching CFPs from joind.in:", error);
       throw error;
     }
   }
 
-  private async fetchRawCFPs(): Promise<RawJoindInCFP[]> {
-    const response = await fetch("https://api.joind.in/v2.1/events?filter=cfp");
-    if (!response.ok) throw new Error("Failed to fetch CFPs from joind.in");
-    const data: JoindInResponse = await response.json();
-    return data.events;
-  }
-
-  private async enrichWithCFPEndDates(cfps: RawJoindInCFP[]): Promise<RawJoindInCFP[]> {
+  private async enrichWithCFPEndDates(
+    cfps: RawJoindInCFP[]
+  ): Promise<RawJoindInCFP[]> {
     return await Promise.all(
       cfps.map(async (cfp) => {
         const cfpEndDate = await this.fetchCFPEndDate(cfp.website_uri);
@@ -43,7 +44,9 @@ export class JoindInCFPSource implements ICFPSource {
     );
   }
 
-  private async fetchCFPEndDate(websiteUri: string): Promise<number | undefined> {
+  private async fetchCFPEndDate(
+    websiteUri: string
+  ): Promise<number | undefined> {
     try {
       const response = await fetch(`${websiteUri}/details`);
       if (!response.ok) return undefined;
@@ -69,12 +72,24 @@ export class JoindInCFPSource implements ICFPSource {
       eventStartDate: new Date(raw.start_date).getTime(),
       eventEndDate: new Date(raw.end_date).getTime(),
       location: raw.location,
-      status: 'open',
-      source: 'joindin',
+      status: "open",
+      source: "joindin",
       tags: raw.tags,
       references: {
-        'joindin': raw.href
-      }
+        joindin: raw.href,
+      },
     };
+  }
+
+  public transformRawDataToCFPs(rawData: RawJoindInCFP[]): CFP[] {
+    return (
+      rawData
+        // Filter only CFPs that have a valid end date
+        .filter(
+          (raw): raw is Required<RawJoindInCFP> => raw.cfpEndDate !== undefined
+        )
+        // Transform each raw CFP to a CFP object
+        .map((raw) => this.transformCFP(raw))
+    );
   }
 }

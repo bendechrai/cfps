@@ -59,6 +59,6 @@ export async function GET(req: Request) {
   }
 }
 
-export async function OPTIONS(req: Request) {
+export async function OPTIONS() {
   return NextResponse.json({}, { headers: corsHeaders });
 }

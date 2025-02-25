@@ -1,7 +1,9 @@
 import { CFP } from "../../utils/types";
 
-export interface ICFPSource {
-  fetchCFPs(): Promise<CFP[]>;
+export interface ICFPSource<T = unknown> {
+  getName(): string;
+  fetchRawData(): Promise<T[]>;
+  transformRawDataToCFPs(rawData: T[]): CFP[];
 }
 
 export interface RawDevelopersEventsCFP {

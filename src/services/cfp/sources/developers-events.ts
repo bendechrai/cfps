@@ -1,24 +1,28 @@
 import { ICFPSource, RawDevelopersEventsCFP, CFPSourceConfig } from "../types";
 import { CFP } from "../../../utils/types";
 
-export class DevelopersEventsCFPSource implements ICFPSource {
+export class DevelopersEventsCFPSource implements ICFPSource<RawDevelopersEventsCFP> {
   private config: CFPSourceConfig;
 
   constructor(config: CFPSourceConfig) {
     this.config = config;
   }
 
-  async fetchCFPs(): Promise<CFP[]> {
+  getName(): string {
+    return "developers.events";
+  }
+
+  async fetchRawData(): Promise<RawDevelopersEventsCFP[]> {
     if (!this.config.enabled) return [];
 
     try {
       const response = await fetch(this.config.url);
-      if (!response.ok) throw new Error("Failed to fetch CFPs from developers.events");
-      const data: RawDevelopersEventsCFP[] = await response.json();
-      return data.map(this.transformCFP);
+      if (!response.ok)
+        throw new Error("Failed to fetch CFPs from developers.events");
+      return await response.json();
     } catch (error) {
       console.error("Error fetching CFPs from developers.events:", error);
-      throw error;
+      throw error; // Let CFPService handle the error
     }
   }
 
@@ -32,11 +36,19 @@ export class DevelopersEventsCFPSource implements ICFPSource {
       eventStartDate: raw.conf.date[0],
       eventEndDate: raw.conf.date[1],
       location: raw.conf.location,
-      status: raw.conf.status as 'open' | 'closed',
-      source: 'developers-events',
+      status: raw.conf.status as "open" | "closed",
+      source: "developers-events",
       references: {
-        'developers-events': raw.link
-      }
+        "developers-events": raw.link,
+      },
     };
+  }
+
+  public transformRawDataToCFPs(rawData: RawDevelopersEventsCFP[]): CFP[] {
+    return (
+      rawData
+        // Transform each raw CFP to a CFP object
+        .map((raw) => this.transformCFP(raw))
+    );
   }
 }

@@ -33,12 +33,19 @@ export function CFPProvider({ children }: { children: ReactNode }) {
     const fetchData = async () => {
       try {
         const response = await fetch('/api/cfps');
-        if (!response.ok) throw new Error('Failed to fetch CFPs');
-        const fetchedCFPs = await response.json();
-        setCfps(fetchedCFPs);
+        const data = await response.json();
+        
+        if (!response.ok) {
+          if (response.status === 429) {
+            throw new Error("Rate limit exceeded. Please wait a few seconds before trying again.");
+          }
+          throw new Error(data.error || 'Failed to fetch CFPs');
+        }
+        
+        setCfps(data);
       } catch (error) {
         console.error("Error fetching CFPs:", error);
-        setError("Failed to load CFPs. Please try again later.");
+        setError(error instanceof Error ? error.message : "Failed to load CFPs. Please try again later.");
       } finally {
         setLoading(false);
       }

@@ -11,6 +11,7 @@ A modern web application to help speakers track and manage conference speaking o
 - Responsive design for desktop and mobile
 - Real-time data from multiple sources:
   - [developers.events](https://developers.events)
+  - [joind.in](https://joind.in)
   - More to come!
 
 ## Getting Started
@@ -19,6 +20,7 @@ A modern web application to help speakers track and manage conference speaking o
 
 - Node.js 18.0 or later
 - npm, yarn, or pnpm
+- PostgreSQL 15 or later
 
 ### Installation
 
@@ -35,13 +37,40 @@ A modern web application to help speakers track and manage conference speaking o
    npm install
    ```
 
-3. Start the development server:
+3. Set up your local environment:
+
+   Create a `.env` file in the project root with:
+   ```
+   ARCJET_KEY=ajkey_key_goes_here
+   ALLOWED_ORIGINS=http://localhost:3000,https://cfp.bendechr.ai,https://cfp-jade.vercel.app
+   DATABASE_URL="postgresql://postgres:postgres@localhost:5432/cfps?schema=public"
+   ```
+   Adjust as needed.
+
+4. Set up the database:
+
+   ```bash
+   # Create and apply database migrations
+   npm run db:migrate:dev
+   ```
+
+5. Start the development server:
 
    ```bash
    npm run dev
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+6. Open [http://localhost:3000](http://localhost:3000) in your browser
+
+## Database Management
+
+This project uses Prisma as the ORM with PostgreSQL. Here are the available database management commands:
+
+- `npm run db:studio` - Open Prisma Studio to view and edit your database
+- `npm run db:push` - Push schema changes directly to the database (development only)
+- `npm run db:migrate:dev` - Create and apply new migrations (development)
+- `npm run db:migrate:deploy` - Apply existing migrations (production)
+- `npm run db:reset` - Reset the database and apply all migrations
 
 ## Usage
 
