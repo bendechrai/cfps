@@ -9,6 +9,7 @@
   max-width: 1200px;
   margin: 0 auto;
   text-align: center;
+  text-wrap: balance;
   font-size: 0.875rem;
 }
 
