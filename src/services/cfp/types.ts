@@ -44,6 +44,18 @@ export interface RawConfsTechCFP {
   cocUrl: string | null;
 }
 
+export interface RawPaperCallCFP {
+  id: string;
+  name: string;
+  eventUrl: string;
+  cfpUrl: string;
+  location: string;
+  eventStartDate: string;
+  eventEndDate: string;
+  cfpEndDate: string;
+  tags: string[];
+}
+
 export interface CFPSourceConfig {
   enabled: boolean;
   url: string;

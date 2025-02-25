@@ -10,8 +10,10 @@ A modern web application to help speakers track and manage conference speaking o
 - Privacy-focused: All submission statuses stored locally in your browser
 - Responsive design for desktop and mobile
 - Real-time data from multiple sources:
+  - [Confs.tech](https://confs.tech)
   - [developers.events](https://developers.events)
-  - [joind.in](https://joind.in)
+  - [Joind.in](https://joind.in)
+  - [Papercall.io](https://papercall.io)
   - More to come!
 
 ## Getting Started

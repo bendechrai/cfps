@@ -1,10 +1,11 @@
-import { ICFPSource, CFPSourceConfig } from "./types";
-import { CFP } from "../../utils/types";
+import { PrismaClient } from "@prisma/client";
+import { CFP } from "@/utils/types";
+import { ConfsTechCFPSource } from "./sources/confs-tech";
 import { DevelopersEventsCFPSource } from "./sources/developers-events";
 import { JoindInCFPSource } from "./sources/joindin";
-import { ConfsTechCFPSource } from "./sources/confs-tech";
-
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PaperCallCFPSource } from "./sources/papercall";
+import { CFPSourceConfig, ICFPSource } from "./types";
+import { InputJsonValue } from "@prisma/client/runtime/library";
 
 export class CFPService {
   private static instance: CFPService;
@@ -24,6 +25,11 @@ export class CFPService {
   }
 
   private initializeSources() {
+    const confsTechConfig: CFPSourceConfig = {
+      enabled: true,
+      url: "https://29flvjv5x9-dsn.algolia.net/1/indexes/*/queries",
+    };
+
     const developersEventsConfig: CFPSourceConfig = {
       enabled: true,
       url: "https://developers.events/all-cfps.json",
@@ -34,15 +40,16 @@ export class CFPService {
       url: "https://api.joind.in/v2.1/events?filter=cfp",
     };
 
-    const confsTechConfig: CFPSourceConfig = {
+    const paperCallConfig: CFPSourceConfig = {
       enabled: true,
-      url: "https://29flvjv5x9-dsn.algolia.net/1/indexes/*/queries",
+      url: "https://www.papercall.io/events?cfps-scope=open&keywords=",
     };
 
     this.sources = [
+      new ConfsTechCFPSource(confsTechConfig),
       new DevelopersEventsCFPSource(developersEventsConfig),
       new JoindInCFPSource(joindInConfig),
-      new ConfsTechCFPSource(confsTechConfig),
+      new PaperCallCFPSource(paperCallConfig),
     ];
   }
 
@@ -70,7 +77,7 @@ export class CFPService {
     await this.prisma.cFPCache.create({
       data: {
         source: sourceName,
-        rawData: data as unknown as Prisma.InputJsonValue,
+        rawData: data as InputJsonValue,
       },
     });
   }
@@ -125,26 +132,24 @@ export class CFPService {
           .flat()
           // Filter only CFPs that have an end date in the future
           .filter((cfp) => cfp.cfpEndDate > currentTime)
+          // Filter out CFPs that have ended
+          .filter((cfp) => cfp.eventEndDate > currentTime)
           // Sort by end date
           .sort((a, b) => a.cfpEndDate - b.cfpEndDate)
       );
     } catch (error) {
       console.error("Error fetching CFPs:", error);
-      
+
       // Check if it's a rate limiting error (HTTP 429)
       if (error instanceof Response && error.status === 429) {
-        throw new Error("Rate limit exceeded. Please wait a few seconds before trying again.");
+        throw new Error(
+          "Rate limit exceeded. Please wait a few seconds before trying again."
+        );
       }
-      
+
       throw new Error("Failed to load CFPs. Please try again later.");
     }
   }
 
-  public formatDate(timestamp: number): string {
-    return new Date(timestamp).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  }
+  
 }
