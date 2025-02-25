@@ -32,6 +32,10 @@ export default function Home() {
               </div>
             </div>
             <main className={styles.main}>
+              <p className={styles.notice}>
+                👷 Some events might appear multiple times. I&apos;m working
+                on deduplication to fix this.
+              </p>
               <CFPGrid />
             </main>
           </div>
