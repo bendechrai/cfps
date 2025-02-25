@@ -28,14 +28,18 @@ export const PageFooter = () => (
         Submit feature requests or issues
       </a>
       . Data from{" "}
+      <a href="https://confs.tech" target="_blank" rel="noopener noreferrer">
+        confs.tech
+      </a>
+      ,{" "}
       <a
         href="https://developers.events"
         target="_blank"
         rel="noopener noreferrer"
       >
         developers.events
-      </a>{" "}
-      and{" "}
+      </a>
+      , and{" "}
       <a href="https://joind.in" target="_blank" rel="noopener noreferrer">
         joind.in
       </a>

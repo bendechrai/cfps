@@ -2,6 +2,7 @@ import { ICFPSource, CFPSourceConfig } from "./types";
 import { CFP } from "../../utils/types";
 import { DevelopersEventsCFPSource } from "./sources/developers-events";
 import { JoindInCFPSource } from "./sources/joindin";
+import { ConfsTechCFPSource } from "./sources/confs-tech";
 
 import { PrismaClient, Prisma } from "@prisma/client";
 
@@ -33,9 +34,15 @@ export class CFPService {
       url: "https://api.joind.in/v2.1/events?filter=cfp",
     };
 
+    const confsTechConfig: CFPSourceConfig = {
+      enabled: true,
+      url: "https://29flvjv5x9-dsn.algolia.net/1/indexes/*/queries",
+    };
+
     this.sources = [
       new DevelopersEventsCFPSource(developersEventsConfig),
       new JoindInCFPSource(joindInConfig),
+      new ConfsTechCFPSource(confsTechConfig),
     ];
   }
 

@@ -29,6 +29,21 @@ export interface RawJoindInCFP {
   cfpEndDate?: number; // Optional as it's fetched separately
 }
 
+export interface RawConfsTechCFP {
+  id: number;
+  name: string;
+  url: string;
+  cfpUrl: string;
+  startDate: string;
+  endDate: string;
+  cfpEndDate: string;
+  city: string | null;
+  country: string | null;
+  online: boolean;
+  topics: string[];
+  cocUrl: string | null;
+}
+
 export interface CFPSourceConfig {
   enabled: boolean;
   url: string;
