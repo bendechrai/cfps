@@ -34,15 +34,12 @@ export const PageFooter = () => (
         rel="noopener noreferrer"
       >
         developers-conferences-agenda
-      </a>
-      {" "} and {" "}
-      <a
-        href="https://joind.in"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      </a>{" "}
+      and{" "}
+      <a href="https://joind.in" target="_blank" rel="noopener noreferrer">
         joind.in
       </a>
+      .
     </div>
   </footer>
 );
