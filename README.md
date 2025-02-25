@@ -10,6 +10,7 @@ A modern web application to help speakers track and manage conference speaking o
 - Privacy-focused: All submission statuses stored locally in your browser
 - Responsive design for desktop and mobile
 - Real-time data from multiple sources:
+  - [Codosaurus](https://www.codosaur.us)
   - [Confs.tech](https://confs.tech)
   - [developers.events](https://developers.events)
   - [Joind.in](https://joind.in)

@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { CFP } from "@/utils/types";
 import { ConfsTechCFPSource } from "./sources/confs-tech";
+import { CodosaurusCFPSource } from "./sources/codosaurus";
 import { DevelopersEventsCFPSource } from "./sources/developers-events";
 import { JoindInCFPSource } from "./sources/joindin";
 import { PaperCallCFPSource } from "./sources/papercall";
@@ -25,6 +26,11 @@ export class CFPService {
   }
 
   private initializeSources() {
+    const codosaurusConfig: CFPSourceConfig = {
+      enabled: true,
+      url: "https://www.codosaur.us/speaking/cfps-ending-soon",
+    };
+
     const confsTechConfig: CFPSourceConfig = {
       enabled: true,
       url: "https://29flvjv5x9-dsn.algolia.net/1/indexes/*/queries",
@@ -46,6 +52,7 @@ export class CFPService {
     };
 
     this.sources = [
+      new CodosaurusCFPSource(codosaurusConfig),
       new ConfsTechCFPSource(confsTechConfig),
       new DevelopersEventsCFPSource(developersEventsConfig),
       new JoindInCFPSource(joindInConfig),

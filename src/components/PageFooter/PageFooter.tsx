@@ -28,6 +28,10 @@ export const PageFooter = () => (
         Submit feature requests or issues
       </a>
       . Data from{" "}
+      <a href="https://www.codosaur.us" target="_blank" rel="noopener noreferrer">
+        codosaur.us
+      </a>
+      ,{" "}
       <a href="https://confs.tech" target="_blank" rel="noopener noreferrer">
         confs.tech
       </a>
@@ -39,9 +43,13 @@ export const PageFooter = () => (
       >
         developers.events
       </a>
-      , and{" "}
+      ,{" "}
       <a href="https://joind.in" target="_blank" rel="noopener noreferrer">
         joind.in
+      </a>
+      , and{" "}
+      <a href="https://papercall.io" target="_blank" rel="noopener noreferrer">
+        papercall.io
       </a>
       .
     </div>
