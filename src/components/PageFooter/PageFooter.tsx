@@ -33,7 +33,7 @@ export const PageFooter = () => (
         target="_blank"
         rel="noopener noreferrer"
       >
-        developers-conferences-agenda
+        developers.events
       </a>{" "}
       and{" "}
       <a href="https://joind.in" target="_blank" rel="noopener noreferrer">
