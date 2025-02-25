@@ -49,29 +49,65 @@ export class ConfsTechCFPSource implements ICFPSource<RawConfsTechCFP> {
     }
   }
 
-  private transformCFP(raw: RawConfsTechCFP): CFP {
-    const location = raw.online
-      ? "Online"
-      : [raw.city, raw.country].filter(Boolean).join(", ");
+  private transformDate(dateStr: string, endOfDay: boolean = false): number {
+    try {
+      // Create a UTC date at either start or end of day
+      const date = new Date(dateStr);
+      const utcDate = new Date(Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        endOfDay ? 23 : 0,
+        endOfDay ? 59 : 0,
+        endOfDay ? 59 : 0
+      ));
+      return utcDate.getTime();
+    } catch (error) {
+      console.error('Error transforming date:', error, 'date:', dateStr);
+      return 0;
+    }
+  }
 
-    return {
-      id: `confstech-${raw.id}`,
-      name: raw.name,
-      cfpUrl: raw.cfpUrl,
-      eventUrl: raw.url,
-      cfpEndDate: new Date(raw.cfpEndDate).getTime(),
-      eventStartDate: new Date(raw.startDate).getTime(),
-      eventEndDate: new Date(raw.endDate).getTime(),
-      location,
-      status: "open", // confs.tech only returns open CFPs
-      source: "confs.tech",
-      references: {
-        "confs.tech": raw.url,
-      },
-    };
+  private transformCFP(raw: RawConfsTechCFP): CFP | null {
+    try {
+      const location = raw.online
+        ? "Online"
+        : [raw.city, raw.country].filter(Boolean).join(", ");
+
+      const cfpEndDate = this.transformDate(raw.cfpEndDate, true);
+      const eventStartDate = this.transformDate(raw.startDate, false);
+      const eventEndDate = this.transformDate(raw.endDate || raw.startDate, true);
+
+      // Skip invalid CFPs
+      if (!cfpEndDate || !eventStartDate || !eventEndDate) {
+        console.warn('Skipping CFP due to invalid dates:', raw);
+        return null;
+      }
+
+      return {
+        id: `confstech-${raw.id}`,
+        name: raw.name,
+        cfpUrl: raw.cfpUrl,
+        eventUrl: raw.url,
+        cfpEndDate,
+        eventStartDate,
+        eventEndDate,
+        location,
+        status: "open", // confs.tech only returns open CFPs
+        source: "confs.tech",
+        references: {
+          "confs.tech": raw.url,
+        },
+      };
+    } catch (error) {
+      console.error('Error transforming CFP:', error, 'raw:', raw);
+      return null;
+    }
   }
 
   public transformRawDataToCFPs(rawData: RawConfsTechCFP[]): CFP[] {
-    return rawData.map((raw) => this.transformCFP(raw));
+    return rawData
+      .map((raw) => this.transformCFP(raw))
+      .filter((cfp): cfp is CFP => cfp !== null);
   }
 }
