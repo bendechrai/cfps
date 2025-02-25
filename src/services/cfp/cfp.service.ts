@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { CFP } from "@/utils/types";
+import { AdatoSystemsCFPSource } from "./sources/adatosystems";
 import { ConfsTechCFPSource } from "./sources/confs-tech";
 import { CodosaurusCFPSource } from "./sources/codosaurus";
 import { DevelopersEventsCFPSource } from "./sources/developers-events";
@@ -26,32 +27,32 @@ export class CFPService {
   }
 
   private initializeSources() {
+    const adatoSystemsConfig: CFPSourceConfig = {
+      url: "https://adatosystems.com/cfp-tracker/",
+    };
+
     const codosaurusConfig: CFPSourceConfig = {
-      enabled: true,
       url: "https://www.codosaur.us/speaking/cfps-ending-soon",
     };
 
     const confsTechConfig: CFPSourceConfig = {
-      enabled: true,
       url: "https://29flvjv5x9-dsn.algolia.net/1/indexes/*/queries",
     };
 
     const developersEventsConfig: CFPSourceConfig = {
-      enabled: true,
       url: "https://developers.events/all-cfps.json",
     };
 
     const joindInConfig: CFPSourceConfig = {
-      enabled: true,
       url: "https://api.joind.in/v2.1/events?filter=cfp",
     };
 
     const paperCallConfig: CFPSourceConfig = {
-      enabled: true,
-      url: "https://www.papercall.io/events?cfps-scope=open&keywords=",
+      url: "https://papercall.io/events?cfps-scope=open&keywords=",
     };
 
     this.sources = [
+      new AdatoSystemsCFPSource(adatoSystemsConfig),
       new CodosaurusCFPSource(codosaurusConfig),
       new ConfsTechCFPSource(confsTechConfig),
       new DevelopersEventsCFPSource(developersEventsConfig),
@@ -116,46 +117,42 @@ export class CFPService {
         console.log(`Using stale cache for ${sourceName} due to fetch error`);
         return cachedData;
       }
-      throw error;
+      return []; // Return empty array instead of throwing to allow other sources to continue
     }
   }
 
   async fetchCFPs(): Promise<CFP[]> {
-    try {
-      // Fetch and transform data from all sources
-      const allCFPs = await Promise.all(
-        this.sources.map(async (source) => {
+    // Fetch and transform data from all sources, handling failures individually
+    const results = await Promise.allSettled(
+      this.sources.map(async (source) => {
+        try {
           const rawData = await this.getSourceData(source);
           return source.transformRawDataToCFPs(rawData);
-        })
-      );
+        } catch (error) {
+          console.error(`Error fetching CFPs from ${source.getName()}:`, error);
+          return [];
+        }
+      })
+    );
 
-      const currentTime = Date.now();
+    // Collect successful results
+    const allCFPs = results
+      .filter((result): result is PromiseFulfilledResult<CFP[]> => result.status === 'fulfilled')
+      .map(result => result.value)
+      .flat();
 
-      // Combine all CFPs and sort by end date
-      return (
-        allCFPs
-          // Flatten the array
-          .flat()
-          // Filter only CFPs that have an end date in the future
-          .filter((cfp) => cfp.cfpEndDate > currentTime)
-          // Filter out CFPs that have ended
-          .filter((cfp) => cfp.eventEndDate > currentTime)
-          // Sort by end date
-          .sort((a, b) => a.cfpEndDate - b.cfpEndDate)
-      );
-    } catch (error) {
-      console.error("Error fetching CFPs:", error);
+    const currentTime = Date.now();
 
-      // Check if it's a rate limiting error (HTTP 429)
-      if (error instanceof Response && error.status === 429) {
-        throw new Error(
-          "Rate limit exceeded. Please wait a few seconds before trying again."
-        );
-      }
-
-      throw new Error("Failed to load CFPs. Please try again later.");
+    // If we got no CFPs at all, something is seriously wrong
+    if (allCFPs.length === 0) {
+      throw new Error("Failed to load CFPs from any source. Please try again later.");
     }
+
+    // Return valid CFPs sorted by end date
+    return allCFPs
+      .filter((cfp) => cfp.cfpEndDate > currentTime)
+      .filter((cfp) => cfp.eventEndDate > currentTime)
+      .sort((a, b) => a.cfpEndDate - b.cfpEndDate);
   }
 
   

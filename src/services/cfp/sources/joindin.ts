@@ -17,7 +17,6 @@ export class JoindInCFPSource implements ICFPSource<RawJoindInCFP> {
   }
 
   async fetchRawData(): Promise<RawJoindInCFP[]> {
-    if (!this.config.enabled) return [];
 
     try {
       const response = await fetch(this.config.url);

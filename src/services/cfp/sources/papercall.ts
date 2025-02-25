@@ -39,15 +39,12 @@ export class PaperCallCFPSource implements ICFPSource<RawPaperCallCFP> {
           if (!titleEl) return;
 
           const name = titleEl.textContent?.trim() || "";
-          const cfpUrl =
-            "https://www.papercall.io" + titleEl.getAttribute("href");
-
-          const id = `papercall-${cfpUrl}`;
+          const cfpUrl = titleEl.getAttribute("href")?.toString() || "";
 
           const eventUrlEl = panel.querySelector(
-            ".panel-body a[target='_blank']"
+            ".panel-body h4 a[target='_blank']"
           );
-          const eventUrl = eventUrlEl?.getAttribute("href") || cfpUrl;
+          const eventUrl = eventUrlEl?.getAttribute("href") || "";
 
           const locationMatch = name.match(/- ([^-]+)$/);
           const location = locationMatch ? locationMatch[1].trim() : "Online";
@@ -85,7 +82,7 @@ export class PaperCallCFPSource implements ICFPSource<RawPaperCallCFP> {
           );
 
           cfps.push({
-            id,
+            id: `papercall-${cfpUrl}`,
             name: name.replace(/- [^-]+$/, "").trim(), // Remove location from name
             eventUrl,
             cfpUrl,

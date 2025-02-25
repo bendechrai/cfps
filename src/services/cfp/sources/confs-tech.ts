@@ -13,7 +13,6 @@ export class ConfsTechCFPSource implements ICFPSource<RawConfsTechCFP> {
   }
 
   async fetchRawData(): Promise<RawConfsTechCFP[]> {
-    if (!this.config.enabled) return [];
 
     try {
       const response = await fetch(this.config.url, {

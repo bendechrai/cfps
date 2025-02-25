@@ -13,7 +13,6 @@ export class DevelopersEventsCFPSource implements ICFPSource<RawDevelopersEvents
   }
 
   async fetchRawData(): Promise<RawDevelopersEventsCFP[]> {
-    if (!this.config.enabled) return [];
 
     try {
       const response = await fetch(this.config.url);

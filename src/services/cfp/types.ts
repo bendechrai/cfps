@@ -57,6 +57,5 @@ export interface RawPaperCallCFP {
 }
 
 export interface CFPSourceConfig {
-  enabled: boolean;
   url: string;
 }

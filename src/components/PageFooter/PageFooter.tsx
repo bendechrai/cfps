@@ -28,7 +28,11 @@ export const PageFooter = () => (
         Submit feature requests or issues
       </a>
       . Data from{" "}
-      <a href="https://www.codosaur.us" target="_blank" rel="noopener noreferrer">
+      <a
+        href="https://codosaur.us"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         codosaur.us
       </a>
       ,{" "}
@@ -46,6 +50,14 @@ export const PageFooter = () => (
       ,{" "}
       <a href="https://joind.in" target="_blank" rel="noopener noreferrer">
         joind.in
+      </a>
+      ,{" "}
+      <a
+        href="https://adatosystems.com"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Leon Adato
       </a>
       , and{" "}
       <a href="https://papercall.io" target="_blank" rel="noopener noreferrer">
