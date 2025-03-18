@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { PrismaClient, Prisma } from '@prisma/client';
 import { CFPService } from '@/services/cfp/cfp.service';
 
-export const maxDuration = 30; // This function can run for a maximum of 30 seconds
+export const maxDuration = 60; // This function can run for a maximum of 30 seconds
 
 const prisma = new PrismaClient();
 
@@ -173,11 +173,11 @@ export async function GET() {
       });
     }
 
-    // Otherwise, find a cache entry that needs updating (older than 5 minutes)
+    // Otherwise, find a cache entry that needs updating (older than 1 hour)
     const staleCache = await prisma.cFPCache.findFirst({
       where: {
         fetchedAt: {
-          lt: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
+          lt: new Date(Date.now() - 60 * 60 * 1000), // 1 hour ago
         },
       },
       orderBy: {
