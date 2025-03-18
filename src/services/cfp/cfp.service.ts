@@ -39,9 +39,9 @@ export class CFPService {
       url: "https://29flvjv5x9-dsn.algolia.net/1/indexes/*/queries",
     };
 
-    const developersEventsConfig: CFPSourceConfig = {
-      url: "https://developers.events/all-cfps.json",
-    };
+    // const developersEventsConfig: CFPSourceConfig = {
+    //   url: "https://developers.events/all-cfps.json",
+    // };
 
     const joindInConfig: CFPSourceConfig = {
       url: "https://api.joind.in/v2.1/events?filter=cfp",
@@ -55,7 +55,7 @@ export class CFPService {
       new AdatoSystemsCFPSource(adatoSystemsConfig),
       new CodosaurusCFPSource(codosaurusConfig),
       new ConfsTechCFPSource(confsTechConfig),
-      new DevelopersEventsCFPSource(developersEventsConfig),
+      // new DevelopersEventsCFPSource(developersEventsConfig),
       new JoindInCFPSource(joindInConfig),
       new PaperCallCFPSource(paperCallConfig),
     ];
