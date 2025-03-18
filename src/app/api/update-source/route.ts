@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { PrismaClient, Prisma } from '@prisma/client';
 import { CFPService } from '@/services/cfp/cfp.service';
 
+export const maxDuration = 30; // This function can run for a maximum of 30 seconds
+
 const prisma = new PrismaClient();
 
 async function processSource(source: string, cfpService: CFPService) {
