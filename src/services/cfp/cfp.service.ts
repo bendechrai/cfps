@@ -11,7 +11,7 @@ import { InputJsonValue } from "@prisma/client/runtime/library";
 
 export class CFPService {
   private static instance: CFPService;
-  private sources: ICFPSource[] = [];
+  private _sources: ICFPSource[] = [];
   private prisma: PrismaClient;
 
   private constructor() {
@@ -24,6 +24,14 @@ export class CFPService {
       CFPService.instance = new CFPService();
     }
     return CFPService.instance;
+  }
+
+  public get sources(): ICFPSource[] {
+    return this._sources;
+  }
+
+  public getSourceByName(name: string): ICFPSource | undefined {
+    return this._sources.find(source => source.getName() === name);
   }
 
   private initializeSources() {
@@ -39,9 +47,9 @@ export class CFPService {
       url: "https://29flvjv5x9-dsn.algolia.net/1/indexes/*/queries",
     };
 
-    // const developersEventsConfig: CFPSourceConfig = {
-    //   url: "https://developers.events/all-cfps.json",
-    // };
+    const developersEventsConfig: CFPSourceConfig = {
+      url: "https://developers.events/all-cfps.json",
+    };
 
     const joindInConfig: CFPSourceConfig = {
       url: "https://api.joind.in/v2.1/events?filter=cfp",
@@ -51,11 +59,11 @@ export class CFPService {
       url: "https://papercall.io/events?cfps-scope=open&keywords=",
     };
 
-    this.sources = [
+    this._sources = [
       new AdatoSystemsCFPSource(adatoSystemsConfig),
       new CodosaurusCFPSource(codosaurusConfig),
       new ConfsTechCFPSource(confsTechConfig),
-      // new DevelopersEventsCFPSource(developersEventsConfig),
+      new DevelopersEventsCFPSource(developersEventsConfig),
       new JoindInCFPSource(joindInConfig),
       new PaperCallCFPSource(paperCallConfig),
     ];

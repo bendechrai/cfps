@@ -18,5 +18,27 @@ model CFPCache {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@unique([source])
   @@index([source, fetchedAt])
+}
+
+model Event {
+  id             String   @id @default(uuid())
+  sourceId       String   // Original ID from the source
+  source         String   // Source name e.g. "developers.events"
+  name           String
+  cfpUrl         String
+  eventUrl       String
+  cfpEndDate     DateTime
+  eventStartDate DateTime
+  eventEndDate   DateTime
+  location       String
+  status         String   // 'open' or 'closed'
+  tags           String[] @default([])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([source, sourceId])
+  @@index([cfpEndDate])
+  @@index([eventStartDate])
 }
