@@ -76,7 +76,7 @@ export class DevelopersEventsCFPSource implements ICFPSource<RawDevelopersEvents
       }
 
       return {
-        id: `devents-${raw.conf.name}-${raw.untilDate}`,
+        id: `devents-${raw.conf.name}-${encodeURIComponent(raw.conf.location)}-${raw.untilDate}`,
         name: raw.conf.name,
         cfpUrl: raw.link,
         eventUrl: raw.conf.hyperlink,
