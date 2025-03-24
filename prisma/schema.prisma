@@ -22,10 +22,33 @@ model CFPCache {
   @@index([source, fetchedAt])
 }
 
+model CanonicalEvent {
+  id              String   @id @default(uuid())
+  name            String
+  normalisedName  String
+  cfpUrl          String
+  eventUrl        String
+  cfpEndDate      DateTime
+  eventStartDate  DateTime
+  eventEndDate    DateTime
+  location        String
+  normalisedLocation String
+  status          String   // 'open' or 'closed'
+  tags            String[] @default([])
+  sources         String[] // List of source names that contribute to this event
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  events          Event[]  // Related source events
+
+  @@index([cfpEndDate])
+  @@index([eventStartDate])
+  @@index([normalisedName, normalisedLocation])
+}
+
 model Event {
-  id             String   @id @default(uuid())
-  sourceId       String   // Original ID from the source
-  source         String   // Source name e.g. "developers.events"
+  id             String         @id @default(uuid())
+  sourceId       String         // Original ID from the source
+  source         String         // Source name e.g. "developers.events"
   name           String
   cfpUrl         String
   eventUrl       String
@@ -33,10 +56,12 @@ model Event {
   eventStartDate DateTime
   eventEndDate   DateTime
   location       String
-  status         String   // 'open' or 'closed'
-  tags           String[] @default([])
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  status         String         // 'open' or 'closed'
+  tags           String[]       @default([])
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  canonicalEvent CanonicalEvent? @relation(fields: [canonicalEventId], references: [id])
+  canonicalEventId String?
 
   @@unique([source, sourceId])
   @@index([cfpEndDate])
