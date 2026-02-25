@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { type Event, type CanonicalEvent, PrismaClient } from "@prisma/client";
+import { type Event, type CanonicalEvent } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 
 export const maxDuration = 60; // This function can run for a maximum of 1 minute
 
@@ -35,7 +36,6 @@ function compareEvents(
 }
 
 export async function GET() {
-  const prisma = new PrismaClient();
 
   try {
     // Load all canonical events, ordered by duplicate check fields for deterministic processing

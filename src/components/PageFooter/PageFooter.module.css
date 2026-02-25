@@ -30,3 +30,14 @@
   vertical-align: -0.125em;
   fill: currentColor;
 }
+
+@media (prefers-color-scheme: dark) {
+  .footer {
+    border-top-color: #2d2d44;
+    color: #6b7280;
+  }
+
+  .footerContent a {
+    color: #60a5fa;
+  }
+}

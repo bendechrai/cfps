@@ -25,3 +25,9 @@
     transform: translateY(-25%);
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  .loadingMessage {
+    color: #a0a0b0;
+  }
+}

@@ -1,21 +1,18 @@
-import { PrismaClient } from "@prisma/client";
 import { CFP } from "@/utils/types";
+import { prisma } from "@/lib/prisma";
 import { AdatoSystemsCFPSource } from "./sources/adatosystems";
 import { ConfsTechCFPSource } from "./sources/confs-tech";
-import { CodosaurusCFPSource } from "./sources/codosaurus";
 import { DevelopersEventsCFPSource } from "./sources/developers-events";
 import { JoindInCFPSource } from "./sources/joindin";
 import { PaperCallCFPSource } from "./sources/papercall";
 import { CFPSourceConfig, ICFPSource } from "./types";
-import { InputJsonValue } from "@prisma/client/runtime/library";
+import { Prisma } from "@prisma/client";
 
 export class CFPService {
   private static instance: CFPService;
   private _sources: ICFPSource[] = [];
-  private prisma: PrismaClient;
 
   private constructor() {
-    this.prisma = new PrismaClient();
     this.initializeSources();
   }
 
@@ -39,10 +36,6 @@ export class CFPService {
       url: "https://adatosystems.com/cfp-tracker/",
     };
 
-    const codosaurusConfig: CFPSourceConfig = {
-      url: "https://www.codosaur.us/speaking/cfps-ending-soon",
-    };
-
     const confsTechConfig: CFPSourceConfig = {
       url: "https://29flvjv5x9-dsn.algolia.net/1/indexes/*/queries",
     };
@@ -61,7 +54,6 @@ export class CFPService {
 
     this._sources = [
       new AdatoSystemsCFPSource(adatoSystemsConfig),
-      new CodosaurusCFPSource(codosaurusConfig),
       new ConfsTechCFPSource(confsTechConfig),
       new DevelopersEventsCFPSource(developersEventsConfig),
       new JoindInCFPSource(joindInConfig),
@@ -70,7 +62,7 @@ export class CFPService {
   }
 
   private async getCachedData<T>(sourceName: string): Promise<T[] | null> {
-    const cacheEntry = await this.prisma.cFPCache.findFirst({
+    const cacheEntry = await prisma.cFPCache.findFirst({
       where: {
         source: sourceName,
         fetchedAt: {
@@ -90,10 +82,10 @@ export class CFPService {
     sourceName: string,
     data: T[]
   ): Promise<void> {
-    await this.prisma.cFPCache.create({
+    await prisma.cFPCache.create({
       data: {
         source: sourceName,
-        rawData: data as InputJsonValue,
+        rawData: data as Prisma.InputJsonValue,
       },
     });
   }

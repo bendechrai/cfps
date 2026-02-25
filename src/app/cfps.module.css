@@ -464,8 +464,6 @@
 @media (min-width: 768px) {
   .header {
     padding: 1rem 1.5rem;
-    background: white;
-    border-bottom: 1px solid #e2e8f0;
   }
 
   .filtersContainer {
@@ -686,4 +684,176 @@
 
 .card.ignored {
   background-color: #fef2f2;
+}
+
+@media (prefers-color-scheme: dark) {
+  .titleBlock {
+    background: #0a0a0a;
+    border-bottom-color: #2d2d44;
+  }
+
+  .titleContent h1 {
+    color: #ededed;
+  }
+
+  .subtitle {
+    color: #a0a0b0;
+  }
+
+  .notice {
+    background-color: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.3);
+    color: #fbbf24;
+  }
+
+  .header {
+    background: #0a0a0a;
+    border-bottom-color: #2d2d44;
+  }
+
+  .filterLabel {
+    color: #a0a0b0;
+  }
+
+  .trigger {
+    background: #1a1a2e;
+    border-color: #2d2d44;
+    color: #ededed;
+  }
+
+  .trigger:hover {
+    border-color: #4299e1;
+  }
+
+  .searchInput {
+    background: #1a1a2e;
+    border-color: #2d2d44;
+    color: #ededed;
+  }
+
+  .searchInput::placeholder {
+    color: #6b7280;
+  }
+
+  .clearButton {
+    color: #a0a0b0;
+  }
+
+  .clearButton:hover {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.1);
+  }
+
+  .main {
+    background: #0a0a0a;
+  }
+
+  .card {
+    background: #1a1a2e;
+    border-color: #2d2d44;
+  }
+
+  .cardTitle {
+    color: #ededed;
+  }
+
+  .cardMeta p {
+    color: #a0a0b0;
+  }
+
+  .statusButton {
+    background: #1a1a2e;
+    border-color: #2d2d44;
+    color: #a0a0b0;
+  }
+
+  .statusButton:hover {
+    background: #2d2d44;
+  }
+
+  .statusButton.active {
+    background: #2d2d44;
+    border-color: #3d3d54;
+  }
+
+  .statusButton:first-child.active {
+    color: #4ade80;
+    border-color: #4ade80;
+    background: rgba(74, 222, 128, 0.1);
+  }
+
+  .statusButton:last-child.active {
+    color: #f87171;
+    border-color: #f87171;
+    background: rgba(248, 113, 113, 0.1);
+  }
+
+  .card.submitted {
+    background-color: rgba(74, 222, 128, 0.1);
+  }
+
+  .card.ignored {
+    background-color: rgba(248, 113, 113, 0.05);
+  }
+
+  .noResults {
+    color: #a0a0b0;
+    background: #1a1a2e;
+  }
+
+  .dropdown {
+    background: #1a1a2e;
+    border-color: #2d2d44;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+  }
+
+  .option {
+    color: #ededed;
+  }
+
+  .option:hover {
+    background-color: #2d2d44;
+  }
+
+  .option.selected {
+    background-color: #2d2d44;
+  }
+
+  .checkbox {
+    border-color: #3d3d54;
+  }
+
+  .pill {
+    background-color: #2d2d44;
+    color: #ededed;
+  }
+
+  .select {
+    background-color: #1a1a2e;
+    border-color: #2d2d44;
+    color: #ededed;
+  }
+
+  .footer {
+    background-color: #0a0a0a;
+    border-top-color: #2d2d44;
+    color: #a0a0b0;
+  }
+
+  .footer a {
+    color: #60a5fa;
+  }
+
+  .githubIcon,
+  .blueskyIcon {
+    fill: #60a5fa;
+  }
+
+  .messageContainer {
+    color: #a0a0b0;
+  }
+
+  .arrow {
+    color: #6b7280;
+  }
 }

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from '@prisma/client';
+import { prisma } from "@/lib/prisma";
 import arcjet, { detectBot, tokenBucket } from "@arcjet/next";
 
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
@@ -47,8 +47,6 @@ export async function GET(req: Request) {
   }
 
   try {
-    const prisma = new PrismaClient();
-
     // Get all open canonical events with future CFP end dates
     const canonicalEvents = await prisma.canonicalEvent.findMany({
       where: {

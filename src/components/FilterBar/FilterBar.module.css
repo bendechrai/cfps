@@ -74,3 +74,32 @@
   background-color: #f7fafc;
   color: #2d3748;
 }
+
+@media (prefers-color-scheme: dark) {
+  .filterLabel {
+    color: #a0a0b0;
+  }
+
+  .searchInput {
+    background: #1a1a2e;
+    border-color: #2d2d44;
+    color: #ededed;
+  }
+
+  .searchInput::placeholder {
+    color: #6b7280;
+  }
+
+  .searchInput:hover {
+    border-color: #4299e1;
+  }
+
+  .clearButton {
+    color: #a0a0b0;
+  }
+
+  .clearButton:hover {
+    background-color: #2d2d44;
+    color: #ededed;
+  }
+}

@@ -117,3 +117,63 @@
 .option:not(:last-child) {
   border-bottom: 1px solid #f0f0f0;
 }
+
+@media (prefers-color-scheme: dark) {
+  .trigger {
+    background: #1a1a2e;
+    border-color: #2d2d44;
+    color: #ededed;
+  }
+
+  .trigger.open {
+    border-color: #4299e1;
+  }
+
+  .trigger:hover {
+    border-color: #4299e1;
+  }
+
+  .placeholder {
+    color: #6b7280;
+  }
+
+  .pill {
+    background: rgba(66, 153, 225, 0.15);
+    color: #60a5fa;
+  }
+
+  .removeButton {
+    color: #6b7280;
+  }
+
+  .removeButton:hover {
+    color: #ededed;
+  }
+
+  .arrow {
+    color: #6b7280;
+  }
+
+  .dropdown {
+    background: #1a1a2e;
+    border-color: #2d2d44;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  }
+
+  .option {
+    color: #ededed;
+  }
+
+  .option:hover {
+    background-color: #2d2d44;
+  }
+
+  .option.selected {
+    background-color: rgba(66, 153, 225, 0.15);
+    color: #60a5fa;
+  }
+
+  .option:not(:last-child) {
+    border-bottom-color: #2d2d44;
+  }
+}
