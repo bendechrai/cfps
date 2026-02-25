@@ -173,8 +173,10 @@ export async function GET() {
     }
 
     // Otherwise, find a cache entry that needs updating (older than 1 hour)
+    // Only consider sources that are still configured
     const staleCache = await prisma.cFPCache.findFirst({
       where: {
+        source: { in: allSources },
         fetchedAt: {
           lt: new Date(Date.now() - 60 * 60 * 1000), // 1 hour ago
         },
