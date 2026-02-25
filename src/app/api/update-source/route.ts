@@ -42,68 +42,42 @@ async function processSource(source: string, cfpService: CFPService) {
     let successCount = 0;
     let skipCount = 0;
 
-    // Update the events table
-    for (const cfp of cfps) {
-      try {
-        // Skip events with missing required dates
-        if (!cfp.cfpEndDate || !cfp.eventStartDate) {
-          console.warn('Skipping event with missing required dates:', {
-            name: cfp.name,
-            source,
-            dates: {
-              cfpEndDate: cfp.cfpEndDate,
-              eventStartDate: cfp.eventStartDate,
-            }
-          });
-          skipCount++;
-          continue;
-        }
+    // Filter and prepare valid entries
+    const validCfps = cfps.filter((cfp) => {
+      if (!cfp.cfpEndDate || !cfp.eventStartDate) {
+        skipCount++;
+        return false;
+      }
+      const cfpEnd = new Date(cfp.cfpEndDate);
+      const eventStart = new Date(cfp.eventStartDate);
+      if (isNaN(cfpEnd.getTime()) || isNaN(eventStart.getTime())) {
+        skipCount++;
+        return false;
+      }
+      return true;
+    });
 
-        // Convert timestamps to Date objects
-        const dates = {
-          cfpEnd: new Date(cfp.cfpEndDate),
-          eventStart: new Date(cfp.eventStartDate),
-          eventEnd: cfp.eventEndDate ? new Date(cfp.eventEndDate) : new Date(cfp.eventStartDate)
-        };
+    // Process in batches of 50 concurrent upserts
+    const BATCH_SIZE = 50;
+    for (let i = 0; i < validCfps.length; i += BATCH_SIZE) {
+      const batch = validCfps.slice(i, i + BATCH_SIZE);
+      const results = await Promise.allSettled(batch.map((cfp) => {
+        const cfpEnd = new Date(cfp.cfpEndDate);
+        const eventStart = new Date(cfp.eventStartDate);
+        let eventEnd = cfp.eventEndDate ? new Date(cfp.eventEndDate) : eventStart;
+        if (isNaN(eventEnd.getTime())) eventEnd = eventStart;
 
-        // Validate dates
-        if (isNaN(dates.cfpEnd.getTime()) || isNaN(dates.eventStart.getTime())) {
-          console.warn('Skipping event with invalid required dates:', {
-            name: cfp.name,
-            source,
-            dates: {
-              cfpEndDate: cfp.cfpEndDate,
-              eventStartDate: cfp.eventStartDate,
-            }
-          });
-          skipCount++;
-          continue;
-        }
-
-        // If eventEnd is invalid, use eventStart (one-day event)
-        if (isNaN(dates.eventEnd.getTime())) {
-          console.log('Using eventStartDate as eventEndDate for one-day event:', {
-            name: cfp.name,
-            source,
-            eventStartDate: dates.eventStart
-          });
-          dates.eventEnd = dates.eventStart;
-        }
-
-        await prisma.event.upsert({
+        return prisma.event.upsert({
           where: {
-            source_sourceId: {
-              source,
-              sourceId: cfp.id,
-            },
+            source_sourceId: { source, sourceId: cfp.id },
           },
           update: {
             name: cfp.name,
             cfpUrl: cfp.cfpUrl,
             eventUrl: cfp.eventUrl,
-            cfpEndDate: dates.cfpEnd,
-            eventStartDate: dates.eventStart,
-            eventEndDate: dates.eventEnd,
+            cfpEndDate: cfpEnd,
+            eventStartDate: eventStart,
+            eventEndDate: eventEnd,
             location: cfp.location,
             status: cfp.status,
             tags: cfp.tags || [],
@@ -115,23 +89,21 @@ async function processSource(source: string, cfpService: CFPService) {
             name: cfp.name,
             cfpUrl: cfp.cfpUrl,
             eventUrl: cfp.eventUrl,
-            cfpEndDate: dates.cfpEnd,
-            eventStartDate: dates.eventStart,
-            eventEndDate: dates.eventEnd,
+            cfpEndDate: cfpEnd,
+            eventStartDate: eventStart,
+            eventEndDate: eventEnd,
             location: cfp.location,
             status: cfp.status,
             tags: cfp.tags || [],
           },
         });
-        successCount++;
-      } catch (error) {
-        console.error('Error processing event:', {
-          name: cfp.name,
-          source,
-          error: error instanceof Error ? error.message : 'Unknown error',
-          cfp: cfp
-        });
-        skipCount++;
+      }));
+      for (const result of results) {
+        if (result.status === 'fulfilled') {
+          successCount++;
+        } else {
+          skipCount++;
+        }
       }
     }
 
