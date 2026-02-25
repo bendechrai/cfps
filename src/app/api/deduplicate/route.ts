@@ -177,7 +177,21 @@ export async function GET() {
       }
     }
 
-    // 3. Batch update canonical events
+    // 3. Remap any temp IDs in event links and canonical updates to real IDs
+    for (const link of eventLinks) {
+      const realId = tempIdToRealId.get(link.canonicalEventId);
+      if (realId) {
+        link.canonicalEventId = realId;
+      }
+    }
+    for (const update of canonicalUpdates) {
+      const realId = tempIdToRealId.get(update.id);
+      if (realId) {
+        update.id = realId;
+      }
+    }
+
+    // 4. Batch update canonical events
     for (let i = 0; i < canonicalUpdates.length; i += BATCH_SIZE) {
       const batch = canonicalUpdates.slice(i, i + BATCH_SIZE);
       await Promise.all(
@@ -187,7 +201,7 @@ export async function GET() {
       );
     }
 
-    // 4. Batch link source events to canonical events
+    // 5. Batch link source events to canonical events
     for (let i = 0; i < eventLinks.length; i += BATCH_SIZE) {
       const batch = eventLinks.slice(i, i + BATCH_SIZE);
       await Promise.all(
