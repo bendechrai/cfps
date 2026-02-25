@@ -48,32 +48,35 @@ export async function GET() {
       orderBy: [{ cfpEndDate: "asc" }, { cfpUrl: "asc" }, { eventUrl: "asc" }],
     });
 
-    // Loop through each source event
+    // Collect all DB operations to batch later
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const canonicalUpdates: { id: string; data: any }[] = [];
+    const eventLinks: { eventId: string; canonicalEventId: string }[] = [];
+    const newCanonicals: {
+      event: Event;
+      tempId: string;
+    }[] = [];
+
+    // Assign temp IDs for new canonical events created in-memory
+    let tempIdCounter = 0;
+
+    // Loop through each source event (comparisons in-memory only)
     for (const event of events) {
       let foundMatch = false;
 
-      // Try to find a matching canonical event
-
-      // Loop through each canonical event
       for (let ptr = 0; ptr < canonicalEvents.length; ptr++) {
         const canonicalEvent = canonicalEvents[ptr];
 
-        // Check if events are similar
         if (compareEvents(event, canonicalEvent)) {
-          // We have a duplicate!
           foundMatch = true;
 
-          // Update canonical event with any missing or better data
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const updates: any = {};
 
-          // Use earliest CFP end date
           if (event.cfpEndDate < canonicalEvent.cfpEndDate) {
             updates.cfpEndDate = event.cfpEndDate;
             canonicalEvents[ptr].cfpEndDate = event.cfpEndDate;
           }
-
-          // Use non-blank URLs if canonical has blanks
           if (!canonicalEvent.cfpUrl && event.cfpUrl) {
             updates.cfpUrl = event.cfpUrl;
             canonicalEvents[ptr].cfpUrl = event.cfpUrl;
@@ -83,73 +86,118 @@ export async function GET() {
             canonicalEvents[ptr].eventUrl = event.eventUrl;
           }
 
-          // Update the database if we have any changes
           if (Object.keys(updates).length > 0) {
-            await prisma.canonicalEvent.update({
-              where: { id: canonicalEvent.id },
-              data: updates,
-            });
+            canonicalUpdates.push({ id: canonicalEvent.id, data: updates });
           }
 
-          // Connect the source event to the canonical event
-          await prisma.event.update({
-            where: { id: event.id },
-            data: { canonicalEventId: canonicalEvent.id },
+          eventLinks.push({
+            eventId: event.id,
+            canonicalEventId: canonicalEvent.id,
           });
-
-          // No need to keep checking for duplicates if we found one!
           break;
         }
       }
 
-      // If no match found, this is a new canonical event
       if (!foundMatch) {
-        // Add to database
-        const newCanonicalEvent = await prisma.canonicalEvent.create({
-          data: {
-            name: event.name,
-            normalisedName: event.name.toLowerCase().replace(/\s+/g, "").trim(),
-            cfpUrl: event.cfpUrl,
-            eventUrl: event.eventUrl,
-            cfpEndDate: event.cfpEndDate,
-            eventStartDate: event.eventStartDate,
-            eventEndDate: event.eventEndDate,
-            location: event.location || "",
-            normalisedLocation: (event.location || "")
-              .toLowerCase()
-              .replace(/\s+/g, "")
-              .trim(),
-            status: event.status,
-            tags: event.tags,
-            sources: [event.source],
-          },
-        });
+        const tempId = `__temp_${tempIdCounter++}`;
+        newCanonicals.push({ event, tempId });
 
-        // Connect the source event to the canonical event
-        await prisma.event.update({
-          where: { id: event.id },
-          data: { canonicalEventId: newCanonicalEvent.id },
-        });
+        // Add to in-memory array for subsequent comparisons
+        canonicalEvents.push({
+          id: tempId,
+          name: event.name,
+          normalisedName: event.name.toLowerCase().replace(/\s+/g, "").trim(),
+          cfpUrl: event.cfpUrl,
+          eventUrl: event.eventUrl,
+          cfpEndDate: event.cfpEndDate,
+          eventStartDate: event.eventStartDate,
+          eventEndDate: event.eventEndDate,
+          location: event.location || "",
+          normalisedLocation: (event.location || "")
+            .toLowerCase()
+            .replace(/\s+/g, "")
+            .trim(),
+          status: event.status,
+          tags: event.tags,
+          sources: [event.source],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        } as CanonicalEvent);
 
-        // Add to local array
-        canonicalEvents.push(newCanonicalEvent);
-
-        // Resort array for deterministic processing
         canonicalEvents.sort((a, b) => {
-          // First sort by cfpEndDate
           const dateA = new Date(a.cfpEndDate).getTime();
           const dateB = new Date(b.cfpEndDate).getTime();
           if (dateA !== dateB) return dateA - dateB;
-
-          // If dates are equal, sort by cfpUrl
-          if (a.cfpUrl !== b.cfpUrl) {
-            return a.cfpUrl.localeCompare(b.cfpUrl);
-          }
-
-          // If cfpUrls are equal, sort by eventUrl
+          if (a.cfpUrl !== b.cfpUrl) return a.cfpUrl.localeCompare(b.cfpUrl);
           return a.eventUrl.localeCompare(b.eventUrl);
         });
       }
+    }
+
+    // Execute all DB operations in batches
+    const BATCH_SIZE = 50;
+
+    // 1. Create new canonical events and collect real IDs
+    const tempIdToRealId = new Map<string, string>();
+    for (let i = 0; i < newCanonicals.length; i += BATCH_SIZE) {
+      const batch = newCanonicals.slice(i, i + BATCH_SIZE);
+      const results = await Promise.all(
+        batch.map(({ event }) =>
+          prisma.canonicalEvent.create({
+            data: {
+              name: event.name,
+              normalisedName: event.name.toLowerCase().replace(/\s+/g, "").trim(),
+              cfpUrl: event.cfpUrl,
+              eventUrl: event.eventUrl,
+              cfpEndDate: event.cfpEndDate,
+              eventStartDate: event.eventStartDate,
+              eventEndDate: event.eventEndDate,
+              location: event.location || "",
+              normalisedLocation: (event.location || "")
+                .toLowerCase()
+                .replace(/\s+/g, "")
+                .trim(),
+              status: event.status,
+              tags: event.tags,
+              sources: [event.source],
+            },
+          })
+        )
+      );
+      for (let j = 0; j < batch.length; j++) {
+        tempIdToRealId.set(batch[j].tempId, results[j].id);
+      }
+    }
+
+    // 2. Add event links for newly created canonical events
+    for (const { event, tempId } of newCanonicals) {
+      const realId = tempIdToRealId.get(tempId);
+      if (realId) {
+        eventLinks.push({ eventId: event.id, canonicalEventId: realId });
+      }
+    }
+
+    // 3. Batch update canonical events
+    for (let i = 0; i < canonicalUpdates.length; i += BATCH_SIZE) {
+      const batch = canonicalUpdates.slice(i, i + BATCH_SIZE);
+      await Promise.all(
+        batch.map(({ id, data }) =>
+          prisma.canonicalEvent.update({ where: { id }, data })
+        )
+      );
+    }
+
+    // 4. Batch link source events to canonical events
+    for (let i = 0; i < eventLinks.length; i += BATCH_SIZE) {
+      const batch = eventLinks.slice(i, i + BATCH_SIZE);
+      await Promise.all(
+        batch.map(({ eventId, canonicalEventId }) =>
+          prisma.event.update({
+            where: { id: eventId },
+            data: { canonicalEventId },
+          })
+        )
+      );
     }
 
     return NextResponse.json({
